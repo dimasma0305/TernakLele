@@ -75,12 +75,6 @@ def submit_flags(flags, config):
                     unknown_responses.add(line)
                     logger.warning('Unknown checksystem response (flag will be resent): %s', line)
 
-            if found_status == FlagStatus.QUEUED and time.time() - flag.time > 10:
-                found_status = FlagStatus.REJECTED
-                line = f'was response {line}, but inv flag too old'
-
             yield SubmitResult(flag.flag, found_status, line)
-
             flags = flags[1:]
-
     sock.close()

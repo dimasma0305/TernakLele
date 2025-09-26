@@ -17,9 +17,10 @@ CONFIG = {
     # 'SYSTEM_URL': 'http://monitor.ructfe.org/flags',
     # 'SYSTEM_TOKEN': '275_17fc104dd58d429ec11b4a5e82041cd2',
 
-    'SYSTEM_PROTOCOL': 'forcad_tcp',
-    'SYSTEM_HOST': '10.10.10.10',
-    'SYSTEM_PORT': '31337',
+    'SYSTEM_PROTOCOL': 'ailurus',
+    'SYSTEM_URL': 'http://10.10.10.10:31337',
+    # 'SYSTEM_HOST': '10.10.10.10',
+    # 'SYSTEM_PORT': '31337',
     'TEAM_TOKEN': '4fdcd6e54faa8991',
     # 'SYSTEM_PROTOCOL': 'volgactf',
     # 'SYSTEM_VALIDATOR': 'volgactf',
@@ -40,7 +41,7 @@ CONFIG = {
     # Password for the web interface. This key will be excluded from config
     # before sending it to farm clients.
     # ########## DO NOT FORGET TO CHANGE IT ##########
-    'SERVER_PASSWORD': os.getenv('SERVER_PASSWORD') or '1234',
+    'SERVER_PASSWORD': os.getenv('SERVER_PASSWORD') or 'dimas123',
 
     # For all time-related operations
     'TIMEZONE': 'Europe/Moscow',

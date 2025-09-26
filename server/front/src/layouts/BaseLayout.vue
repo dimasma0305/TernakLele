@@ -3,9 +3,9 @@
     <q-header elevated class="bg-cbs text-cbs">
       <q-toolbar class="bg-cbs text-cbs">
         <q-avatar>
-          <img src="@/assets/cbs.png" />
+          <img src="@/assets/favicon.ico" />
         </q-avatar>
-        <q-toolbar-title> S4D Farm </q-toolbar-title>
+        <q-toolbar-title> Ternak Lele </q-toolbar-title>
         <q-tabs class="bg-cbs text-cbs" shrink>
           <q-route-tab :to="{ name: 'flags' }" label="Flags" />
           <q-route-tab :to="{ name: 'teams' }" label="Teams" />

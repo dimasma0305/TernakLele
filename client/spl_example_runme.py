@@ -1,20 +1,7 @@
 #!/usr/bin/env python3
 
-import os
 import random
 import sys
-
-REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
-REDIS_PORT = 6378
-REDIS_DB = 2
-
-try:
-    import redis
-
-    cache = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
-except ImportError:
-    redis = None  # suppress import warning
-    print('Redis is not installed, so you won\'t be able to use script caching')
 
 if len(sys.argv) < 2:
     print(f'Usage: {sys.argv[0]} <target>')
