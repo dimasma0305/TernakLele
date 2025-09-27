@@ -6,20 +6,20 @@ CONFIG = {
     'DEBUG': os.getenv('DEBUG') == '1',
 
     'TEAMS': {
-        f'Team #{i}': f'10.60.{i}.3'
-        for i in range(0, 10)
+        f'Team #{i}': f'{i}'
+        for i in range(1, 40)
     },
     # 'FLAG_FORMAT': r'CTF\.Moscow\{[a-zA-Z\.0-9_-]+\}',
     # 'FLAG_FORMAT': r'VolgaCTF{[\w-]*\.[\w-]*\.[\w-]*}',
-    'FLAG_FORMAT': r'[A-Z0-9]{31}=',
+    'FLAG_FORMAT': r'COMPFEST17{.*?}',
 
     # 'SYSTEM_PROTOCOL': 'ructf_http',
     # 'SYSTEM_URL': 'http://monitor.ructfe.org/flags',
     # 'SYSTEM_TOKEN': '275_17fc104dd58d429ec11b4a5e82041cd2',
 
     'SYSTEM_PROTOCOL': 'ailurus',
-    'SYSTEM_URL': 'http://10.10.10.10:31337',
-    'TEAM_TOKEN': '4fdcd6e54faa8991',
+    'SYSTEM_URL': 'https://api.ctf-compfest.com',
+    'TEAM_TOKEN': 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1ODk2ODMzMiwianRpIjoiYzY3Mzg5NzQtZTg2NC00ZjE3LTkyOTEtMWJmYmVkOTIzN2ZjIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ0ZWFtIjp7ImlkIjo4LCJuYW1lIjoiYXBhIHlhIGthPyJ9fSwibmJmIjoxNzU4OTY4MzMyLCJleHAiOjE3NTkwMTE1MzJ9.oq5hpSyTiOl7FVAnObP1Yl6NU915fuJGo4g8oMyYRct167VC819nTw3-7ZmU9V1QFe6pFnVfdz9TXyNPzoYlcA',
 
     # 'SYSTEM_HOST': '10.10.10.10',
     # 'SYSTEM_PORT': '31337',
@@ -33,6 +33,7 @@ CONFIG = {
     'SUBMIT_GRACE_SECONDS': 5,
     'RUN_INTERVAL': 30,
     'WATCH_POLL': 2,
+    'USE_THREADING': False,  # Set to False to run solvers synchronously (no threading)
 
     # The server will submit not more than SUBMIT_FLAG_LIMIT flags
     # every SUBMIT_PERIOD seconds. Flags received more than

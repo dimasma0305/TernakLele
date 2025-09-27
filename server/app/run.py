@@ -230,9 +230,14 @@ def format_flags_list(flags: List[str], limit: int = 10) -> str:
 # Main loop
 
 def main_loop():
-    logger.info('Starting enhanced runner (no persistence, console logs with icons & colors)')
-
     config = CONFIG
+    use_threading = config.get('USE_THREADING', True)
+    
+    if use_threading:
+        logger.info('Starting enhanced runner (threaded mode, console logs with icons & colors)')
+    else:
+        logger.info('Starting enhanced runner (synchronous mode, console logs with icons & colors)')
+
     flag_regex = re.compile(config['FLAG_FORMAT'])
     solvers_dir = Path(__file__).parent / 'solvers'
 
@@ -258,9 +263,11 @@ def main_loop():
     in_progress: Set[Tuple[str,str]] = set()
     in_progress_lock = threading.Lock()
 
-    # Thread pool for running solvers
-    solver_threads = int(config.get('SOLVER_THREADS', max(4, len(list(solvers_dir.glob('*.py'))) * max(1, len(teams)))))
-    executor = ThreadPoolExecutor(max_workers=solver_threads)
+    # Thread pool for running solvers (only if threading is enabled)
+    executor = None
+    if use_threading:
+        solver_threads = int(config.get('SOLVER_THREADS', max(4, len(list(solvers_dir.glob('*.py'))) * max(1, len(teams)))))
+        executor = ThreadPoolExecutor(max_workers=solver_threads)
 
     stop_event = threading.Event()
 
@@ -277,10 +284,23 @@ def main_loop():
             if key in in_progress:
                 return False
             in_progress.add(key)
-        fut = executor.submit(worker_run_solver_and_collect, solver_path, team_name, team_ip, flag_regex)
-        fut.add_done_callback(functools.partial(handle_worker_result, key=key,
-                                               pending_lock=pending_lock, pending_flags=pending_flags,
-                                               accepted_set=accepted_set, in_progress=in_progress, in_progress_lock=in_progress_lock))
+        
+        if use_threading:
+            # Threaded execution
+            fut = executor.submit(worker_run_solver_and_collect, solver_path, team_name, team_ip, flag_regex)
+            fut.add_done_callback(functools.partial(handle_worker_result, key=key,
+                                                   pending_lock=pending_lock, pending_flags=pending_flags,
+                                                   accepted_set=accepted_set, in_progress=in_progress, in_progress_lock=in_progress_lock))
+        else:
+            # Synchronous execution
+            try:
+                flags_from_task = worker_run_solver_and_collect(solver_path, team_name, team_ip, flag_regex)
+                handle_worker_result_sync(flags_from_task, key, pending_lock, pending_flags, accepted_set, in_progress, in_progress_lock)
+            except Exception:
+                logger.exception('Exception in synchronous solver execution')
+                with in_progress_lock:
+                    if key in in_progress:
+                        in_progress.remove(key)
         return True
 
     def worker_run_solver_and_collect(solver_path: Path, team_name: str, team_ip: str, flag_regex: re.Pattern) -> List[Flag]:
@@ -333,33 +353,67 @@ def main_loop():
             except Exception:
                 pass
 
-    # watcher thread
-    def watcher_thread():
-        # mark initial mtimes so they don't all appear changed (main loop will schedule full runs)
+    def handle_worker_result_sync(flags_from_task: List[Flag], key: Tuple[str,str], pending_lock: threading.Lock, pending_flags: List[Flag],
+                                 accepted_set: Set[str], in_progress: Set[Tuple[str,str]], in_progress_lock: threading.Lock):
+        """Synchronous version of handle_worker_result for non-threaded execution"""
         try:
-            initial = sorted([p for p in (solvers_dir.glob('*.py') if solvers_dir.exists() else [])])
-            for p in initial:
-                try:
-                    monitor._mtimes[str(p.resolve())] = p.stat().st_mtime
-                except Exception:
-                    pass
-            logger.info('Watcher started, initial solvers=%d', len(initial))
-
-            while not stop_event.is_set():
-                changed = monitor.scan()
-                if changed:
-                    logger.info('Watcher detected %d changed/new solver(s)', len(changed))
-                    for s in changed:
-                        for tn, tip in teams.items():
-                            if schedule_solver_run(s, tn, tip):
-                                with print_lock:
-                                    logger.info(f"{colorize(EMOJI['scheduled'], 'blue')} {colorize('Scheduled immediate run:', 'blue')} {s.name} -> {tn}")
-                stop_event.wait(WATCH_POLL)
+            if flags_from_task:
+                # dedupe vs pending and accepted
+                with pending_lock:
+                    existing = {f.flag for f in pending_flags}
+                    to_add = []
+                    for f in flags_from_task:
+                        if f.flag in existing or f.flag in accepted_set:
+                            logger.debug('Skipping duplicate/newly-accepted flag: %s', f.flag)
+                            continue
+                        to_add.append(f)
+                    if to_add:
+                        pending_flags.extend(to_add)
+                        # pretty-print added flags
+                        with print_lock:
+                            logger.info(f"{colorize(EMOJI['added'], 'blue')} {colorize('Added', 'blue')} {len(to_add)} pending flag(s): {format_flags_list([x.flag for x in to_add])}")
         except Exception:
-            logger.exception('Watcher thread exception')
+            logger.exception('Exception in synchronous worker result handler')
+        finally:
+            # clear in_progress marker
+            try:
+                with in_progress_lock:
+                    if key in in_progress:
+                        in_progress.remove(key)
+            except Exception:
+                pass
 
-    watcher = threading.Thread(target=watcher_thread, daemon=True)
-    watcher.start()
+    # watcher thread (only if threading is enabled)
+    watcher = None
+    if use_threading:
+        def watcher_thread():
+            # mark initial mtimes so they don't all appear changed (main loop will schedule full runs)
+            try:
+                initial = sorted([p for p in (solvers_dir.glob('*.py') if solvers_dir.exists() else [])])
+                for p in initial:
+                    try:
+                        monitor._mtimes[str(p.resolve())] = p.stat().st_mtime
+                    except Exception:
+                        pass
+                logger.info('Watcher started, initial solvers=%d', len(initial))
+
+                while not stop_event.is_set():
+                    changed = monitor.scan()
+                    if changed:
+                        logger.info('Watcher detected %d changed/new solver(s)', len(changed))
+                        for s in changed:
+                            for tn, tip in teams.items():
+                                if schedule_solver_run(s, tn, tip):
+                                    with print_lock:
+                                        logger.info(f"{colorize(EMOJI['scheduled'], 'blue')} {colorize('Scheduled immediate run:', 'blue')} {s.name} -> {tn}")
+                    stop_event.wait(WATCH_POLL)
+            except Exception:
+                logger.exception('Watcher thread exception')
+
+        watcher = threading.Thread(target=watcher_thread, daemon=True)
+        watcher.start()
+    else:
+        logger.info('Watcher disabled in synchronous mode')
 
     try:
         while not stop_event.is_set():
@@ -447,8 +501,10 @@ def main_loop():
     finally:
         logger.info('Shutting down: stopping watcher and executor')
         stop_event.set()
-        watcher.join(timeout=5)
-        executor.shutdown(wait=True)
+        if watcher:
+            watcher.join(timeout=5)
+        if executor:
+            executor.shutdown(wait=True)
         logger.info('Shutdown complete')
 
 if __name__ == '__main__':
