@@ -13,7 +13,7 @@ This version improves logging: emojis + ANSI colors and time-only timestamps (no
 Place this file under your `app/` package (e.g. server/app/cli_runner_enhanced.py) and run
 from the repository root (so `app` package is importable):
 
-  python -m app.cli_runner_enhanced
+  python -m app.run
 
 Configuration keys (in CONFIG) that are used/added:
  - RUN_INTERVAL (seconds, default 30)
@@ -24,7 +24,6 @@ Configuration keys (in CONFIG) that are used/added:
  - SUBMIT_GRACE_SECONDS (sec, default 5)
  - SYSTEM_PROTOCOL (string, e.g. 'ailurus')
 
-Note: persistence and log-file features have been removed as requested; pending flags are only kept in memory.
 """
 from __future__ import annotations
 
