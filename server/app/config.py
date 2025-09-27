@@ -19,21 +19,28 @@ CONFIG = {
 
     'SYSTEM_PROTOCOL': 'ailurus',
     'SYSTEM_URL': 'http://10.10.10.10:31337',
+    'TEAM_TOKEN': '4fdcd6e54faa8991',
+
     # 'SYSTEM_HOST': '10.10.10.10',
     # 'SYSTEM_PORT': '31337',
-    'TEAM_TOKEN': '4fdcd6e54faa8991',
     # 'SYSTEM_PROTOCOL': 'volgactf',
     # 'SYSTEM_VALIDATOR': 'volgactf',
     # 'SYSTEM_HOST': 'final.volgactf.ru',
     # 'SYSTEM_SERVER_KEY': validators.volgactf.get_public_key('https://final.volgactf.ru'),
+
+    # this is for run.py
+    'SOLVER_TIMEOUT': 60,
+    'SUBMIT_GRACE_SECONDS': 5,
+    'RUN_INTERVAL': 30,
+    'WATCH_POLL': 2,
 
     # The server will submit not more than SUBMIT_FLAG_LIMIT flags
     # every SUBMIT_PERIOD seconds. Flags received more than
     # FLAG_LIFETIME seconds ago will be skipped.
     'SUBMIT_FLAG_LIMIT': 100,
     'SUBMIT_PERIOD': 2,
-    # 'FLAG_LIFETIME': 5 * 60,
     'FLAG_LIFETIME': 10 * 60,
+    # 'FLAG_LIFETIME': 5 * 60,
 
     # VOLGA: Don't make more than INFO_FLAG_LIMIT requests to get flag info,
     # usually should be more than SUBMIT_FLAG_LIMIT
