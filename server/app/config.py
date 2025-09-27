@@ -32,7 +32,8 @@ CONFIG = {
     # FLAG_LIFETIME seconds ago will be skipped.
     'SUBMIT_FLAG_LIMIT': 100,
     'SUBMIT_PERIOD': 2,
-    'FLAG_LIFETIME': 5 * 60,
+    # 'FLAG_LIFETIME': 5 * 60,
+    'FLAG_LIFETIME': 10 * 60,
 
     # VOLGA: Don't make more than INFO_FLAG_LIMIT requests to get flag info,
     # usually should be more than SUBMIT_FLAG_LIMIT
