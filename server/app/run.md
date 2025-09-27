@@ -1,0 +1,1 @@
+for each solve script we need to make a thread, then add toggle to activate recursive thread or not for each team ip that we suply in the solver script. 

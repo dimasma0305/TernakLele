@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """
 Enhanced TernakLele Loop Runner (simplified, improved logging + colors)
-- Runs ALL solvers every RUN_INTERVAL seconds against all teams (threaded)
+- Runs ALL solvers every RUN_INTERVAL seconds against all teams
+- Starts a dedicated thread per solver script (this is ALWAYS used, independent of USE_THREADING)
+- USE_THREADING toggles whether each solver will attack its teams concurrently (per-solver executor)
 - Watches ./solvers for new/updated solver .py and runs them immediately
 - Deduplicates flags, keeps pending queue in-memory
 - Applies grace window before submitting freshly-discovered flags
 - Uses repo's configured protocol module (CONFIG['SYSTEM_PROTOCOL']) to submit flags
-- Uses ThreadPoolExecutor for concurrency and safe shutdown
-
-This version improves logging: emojis + ANSI colors and time-only timestamps (no year-month-day) to make console output easier to scan.
 
 Place this file under your `app/` package (e.g. server/app/cli_runner_enhanced.py) and run
 from the repository root (so `app` package is importable):
@@ -18,12 +17,10 @@ from the repository root (so `app` package is importable):
 Configuration keys (in CONFIG) that are used/added:
  - RUN_INTERVAL (seconds, default 30)
  - WATCH_POLL (seconds, default 2)
- - SOLVER_THREADS (int, default: computed)
- - SOLVER_TIMEOUT (seconds, default 30)
+ - SOLVER_TIMEOUT (seconds, default 60)
  - SUBMIT_FLAG_LIMIT (int) - forwarded to get_fair_share
  - SUBMIT_GRACE_SECONDS (sec, default 5)
- - SYSTEM_PROTOCOL (string, e.g. 'ailurus')
-
+ - USE_THREADING (bool) - when True each solver will run attacks against teams concurrently; when False each solver will run teams sequentially
 """
 from __future__ import annotations
 
@@ -33,10 +30,10 @@ import re
 import time
 import signal
 import subprocess
-import traceback
 import threading
 import functools
 import logging
+import queue
 from pathlib import Path
 from typing import Dict, List, Tuple, Set
 from concurrent.futures import ThreadPoolExecutor, Future
@@ -46,15 +43,9 @@ import importlib
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'app'))
 
 # repo imports
-try:
-    from config import CONFIG
-    from models import Flag, FlagStatus, SubmitResult
-    from utils import get_fair_share
-except Exception:
-    # fallback to server.app
-    from server.app.config import CONFIG
-    from server.app.models import Flag, FlagStatus, SubmitResult
-    from server.app.utils import get_fair_share
+from config import CONFIG
+from models import Flag, FlagStatus, SubmitResult
+from utils import get_fair_share
 
 # Load protocol submit implementation via CONFIG
 SYSTEM_PROTOCOL = CONFIG.get('SYSTEM_PROTOCOL', 'ailurus')
@@ -110,7 +101,7 @@ class ColoredFormatter(logging.Formatter):
         msg = super().format(record)
         return msg
 
-logger = logging.getLogger('cli_runner')
+logger = logging.getLogger('->')
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
@@ -231,12 +222,10 @@ def format_flags_list(flags: List[str], limit: int = 10) -> str:
 
 def main_loop():
     config = CONFIG
-    use_threading = config.get('USE_THREADING', True)
-    
-    if use_threading:
-        logger.info('Starting enhanced runner (threaded mode, console logs with icons & colors)')
-    else:
-        logger.info('Starting enhanced runner (synchronous mode, console logs with icons & colors)')
+    # NOTE: USE_THREADING now controls per-solver concurrency (i.e. whether a solver attacks multiple teams concurrently).
+    use_threading = bool(config.get('USE_THREADING', True))
+
+    logger.info('Starting enhanced runner: per-solver threads ALWAYS on. Per-solver concurrent attacks=%s', use_threading)
 
     flag_regex = re.compile(config['FLAG_FORMAT'])
     solvers_dir = Path(__file__).parent / 'solvers'
@@ -263,12 +252,6 @@ def main_loop():
     in_progress: Set[Tuple[str,str]] = set()
     in_progress_lock = threading.Lock()
 
-    # Thread pool for running solvers (only if threading is enabled)
-    executor = None
-    if use_threading:
-        solver_threads = int(config.get('SOLVER_THREADS', max(4, len(list(solvers_dir.glob('*.py'))) * max(1, len(teams)))))
-        executor = ThreadPoolExecutor(max_workers=solver_threads)
-
     stop_event = threading.Event()
 
     def graceful(signum, frame):
@@ -278,31 +261,7 @@ def main_loop():
     signal.signal(signal.SIGINT, graceful)
     signal.signal(signal.SIGTERM, graceful)
 
-    def schedule_solver_run(solver_path: Path, team_name: str, team_ip: str) -> bool:
-        key = (str(solver_path.resolve()), team_name)
-        with in_progress_lock:
-            if key in in_progress:
-                return False
-            in_progress.add(key)
-        
-        if use_threading:
-            # Threaded execution
-            fut = executor.submit(worker_run_solver_and_collect, solver_path, team_name, team_ip, flag_regex)
-            fut.add_done_callback(functools.partial(handle_worker_result, key=key,
-                                                   pending_lock=pending_lock, pending_flags=pending_flags,
-                                                   accepted_set=accepted_set, in_progress=in_progress, in_progress_lock=in_progress_lock))
-        else:
-            # Synchronous execution
-            try:
-                flags_from_task = worker_run_solver_and_collect(solver_path, team_name, team_ip, flag_regex)
-                handle_worker_result_sync(flags_from_task, key, pending_lock, pending_flags, accepted_set, in_progress, in_progress_lock)
-            except Exception:
-                logger.exception('Exception in synchronous solver execution')
-                with in_progress_lock:
-                    if key in in_progress:
-                        in_progress.remove(key)
-        return True
-
+    # Reused worker that runs a single solver against a single team and returns Flag objects
     def worker_run_solver_and_collect(solver_path: Path, team_name: str, team_ip: str, flag_regex: re.Pattern) -> List[Flag]:
         solver_name = solver_path.stem
         out, ok = run_solver_process(solver_path, team_ip)
@@ -323,111 +282,168 @@ def main_loop():
             logger.warning('%s %s [%s -> %s] Solver failed/timed out. Output: %s', colorize(EMOJI['error'], 'yellow'), colorize('ERROR', 'red'), solver_name, team_name, out.strip()[:400])
         return found_objs
 
-    def handle_worker_result(fut: Future, key: Tuple[str,str], pending_lock: threading.Lock, pending_flags: List[Flag],
-                             accepted_set: Set[str], in_progress: Set[Tuple[str,str]], in_progress_lock: threading.Lock):
-        try:
-            flags_from_task = fut.result()
-            if flags_from_task:
-                # dedupe vs pending and accepted
-                with pending_lock:
-                    existing = {f.flag for f in pending_flags}
-                    to_add = []
-                    for f in flags_from_task:
-                        if f.flag in existing or f.flag in accepted_set:
-                            logger.debug('Skipping duplicate/newly-accepted flag: %s', f.flag)
-                            continue
-                        to_add.append(f)
-                    if to_add:
-                        pending_flags.extend(to_add)
-                        # pretty-print added flags
-                        with print_lock:
-                            logger.info(f"{colorize(EMOJI['added'], 'blue')} {colorize('Added', 'blue')} {len(to_add)} pending flag(s): {format_flags_list([x.flag for x in to_add])}")
-        except Exception:
-            logger.exception('Exception in worker future callback')
-        finally:
-            # clear in_progress marker
-            try:
-                with in_progress_lock:
-                    if key in in_progress:
-                        in_progress.remove(key)
-            except Exception:
-                pass
+    def handle_found_flags_from_task(flags_from_task: List[Flag]):
+        # dedupe vs pending and accepted
+        if not flags_from_task:
+            return
+        with pending_lock:
+            existing = {f.flag for f in pending_flags}
+            to_add = []
+            for f in flags_from_task:
+                if f.flag in existing or f.flag in accepted_set:
+                    logger.debug('Skipping duplicate/newly-accepted flag: %s', f.flag)
+                    continue
+                to_add.append(f)
+            if to_add:
+                pending_flags.extend(to_add)
+                # pretty-print added flags
+                with print_lock:
+                    logger.info(f"{colorize(EMOJI['added'], 'blue')} {colorize('Added', 'blue')} {len(to_add)} pending flag(s): {format_flags_list([x.flag for x in to_add])}")
 
-    def handle_worker_result_sync(flags_from_task: List[Flag], key: Tuple[str,str], pending_lock: threading.Lock, pending_flags: List[Flag],
-                                 accepted_set: Set[str], in_progress: Set[Tuple[str,str]], in_progress_lock: threading.Lock):
-        """Synchronous version of handle_worker_result for non-threaded execution"""
-        try:
-            if flags_from_task:
-                # dedupe vs pending and accepted
-                with pending_lock:
-                    existing = {f.flag for f in pending_flags}
-                    to_add = []
-                    for f in flags_from_task:
-                        if f.flag in existing or f.flag in accepted_set:
-                            logger.debug('Skipping duplicate/newly-accepted flag: %s', f.flag)
-                            continue
-                        to_add.append(f)
-                    if to_add:
-                        pending_flags.extend(to_add)
-                        # pretty-print added flags
-                        with print_lock:
-                            logger.info(f"{colorize(EMOJI['added'], 'blue')} {colorize('Added', 'blue')} {len(to_add)} pending flag(s): {format_flags_list([x.flag for x in to_add])}")
-        except Exception:
-            logger.exception('Exception in synchronous worker result handler')
-        finally:
-            # clear in_progress marker
-            try:
-                with in_progress_lock:
-                    if key in in_progress:
-                        in_progress.remove(key)
-            except Exception:
-                pass
+    # Per-solver thread management
+    solver_threads: Dict[str, Dict] = {}
+    solver_threads_lock = threading.Lock()
 
-    # watcher thread (only if threading is enabled)
-    watcher = None
-    if use_threading:
-        def watcher_thread():
-            # mark initial mtimes so they don't all appear changed (main loop will schedule full runs)
-            try:
-                initial = sorted([p for p in (solvers_dir.glob('*.py') if solvers_dir.exists() else [])])
-                for p in initial:
-                    try:
-                        monitor._mtimes[str(p.resolve())] = p.stat().st_mtime
-                    except Exception:
-                        pass
-                logger.info('Watcher started, initial solvers=%d', len(initial))
+    def ensure_solver_worker(solver_path: Path):
+        key = str(solver_path.resolve())
+        with solver_threads_lock:
+            if key in solver_threads:
+                return solver_threads[key]['queue']
 
+            q = queue.Queue()
+
+            def solver_thread_loop():
+                # Each solver thread can optionally create its own ThreadPoolExecutor when use_threading==True
+                logger.info('Solver thread started for %s', solver_path.name)
+                local_executor = None
                 while not stop_event.is_set():
-                    changed = monitor.scan()
-                    if changed:
-                        logger.info('Watcher detected %d changed/new solver(s)', len(changed))
-                        for s in changed:
-                            for tn, tip in teams.items():
-                                if schedule_solver_run(s, tn, tip):
-                                    with print_lock:
-                                        logger.info(f"{colorize(EMOJI['scheduled'], 'blue')} {colorize('Scheduled immediate run:', 'blue')} {s.name} -> {tn}")
-                    stop_event.wait(WATCH_POLL)
-            except Exception:
-                logger.exception('Watcher thread exception')
+                    try:
+                        # wait for a 'run' command or timeout to allow shutdown check
+                        cmd = q.get(timeout=1)
+                    except queue.Empty:
+                        continue
+                    if cmd == 'run_all':
+                        # Run this solver against all teams. If use_threading True then run per-team concurrently.
+                        teams_items = list(teams.items())
+                        if not teams_items:
+                            continue
 
-        watcher = threading.Thread(target=watcher_thread, daemon=True)
-        watcher.start()
-    else:
-        logger.info('Watcher disabled in synchronous mode')
+                        if use_threading:
+                            # create/reuse a small executor for this solver
+                            if local_executor is None:
+                                max_workers = int(config.get('SOLVER_THREADS_PER_SOLVER', max(2, len(teams_items))))
+                                local_executor = ThreadPoolExecutor(max_workers=max_workers)
+
+                            futures: List[Future] = []
+
+                            for tn, tip in teams_items:
+                                key_inp = (key, tn)
+                                with in_progress_lock:
+                                    if key_inp in in_progress:
+                                        logger.debug('Skipping already in-progress %s -> %s', solver_path.name, tn)
+                                        continue
+                                    in_progress.add(key_inp)
+
+                                fut = local_executor.submit(worker_run_solver_and_collect, solver_path, tn, tip, flag_regex)
+
+                                # attach a callback to process flags and clear in_progress
+                                def _cb(fut, solver_key=key, team_name=tn):
+                                    try:
+                                        res = fut.result()
+                                        handle_found_flags_from_task(res)
+                                    except Exception:
+                                        logger.exception('Exception in per-solver future')
+                                    finally:
+                                        with in_progress_lock:
+                                            k = (solver_key, team_name)
+                                            if k in in_progress:
+                                                in_progress.remove(k)
+
+                                fut.add_done_callback(_cb)
+                                futures.append(fut)
+
+                            # optionally wait a small amount or continue; we don't block the solver thread here
+
+                        else:
+                            # sequential execution in this solver thread
+                            for tn, tip in teams_items:
+                                key_inp = (key, tn)
+                                with in_progress_lock:
+                                    if key_inp in in_progress:
+                                        logger.debug('Skipping already in-progress %s -> %s', solver_path.name, tn)
+                                        continue
+                                    in_progress.add(key_inp)
+                                try:
+                                    res = worker_run_solver_and_collect(solver_path, tn, tip, flag_regex)
+                                    handle_found_flags_from_task(res)
+                                except Exception:
+                                    logger.exception('Exception while running solver sequentially')
+                                finally:
+                                    with in_progress_lock:
+                                        if key_inp in in_progress:
+                                            in_progress.remove(key_inp)
+
+                    elif cmd == 'shutdown':
+                        break
+
+                if local_executor:
+                    local_executor.shutdown(wait=True)
+                logger.info('Solver thread exiting for %s', solver_path.name)
+
+            t = threading.Thread(target=solver_thread_loop, daemon=True)
+            solver_threads[key] = {'thread': t, 'queue': q, 'path': solver_path}
+            t.start()
+            return q
+
+    # watcher thread (always present) to detect file changes and enqueue immediate runs
+    def watcher_thread():
+        # mark initial mtimes so they don't all appear changed (main loop will schedule full runs)
+        try:
+            initial = sorted([p for p in (solvers_dir.glob('*.py') if solvers_dir.exists() else [])])
+            for p in initial:
+                try:
+                    monitor._mtimes[str(p.resolve())] = p.stat().st_mtime
+                except Exception:
+                    pass
+            logger.info('Watcher started, initial solvers=%d', len(initial))
+
+            while not stop_event.is_set():
+                changed = monitor.scan()
+                if changed:
+                    logger.info('Watcher detected %d changed/new solver(s)', len(changed))
+                    for s in changed:
+                        q = ensure_solver_worker(s)
+                        # Schedule immediate run for this solver
+                        try:
+                            q.put_nowait('run_all')
+                            with print_lock:
+                                logger.info(f"{colorize(EMOJI['scheduled'], 'blue')} {colorize('Scheduled immediate run:', 'blue')} {s.name}")
+                        except Exception:
+                            logger.exception('Failed to enqueue immediate run for %s', s)
+                stop_event.wait(WATCH_POLL)
+        except Exception:
+            logger.exception('Watcher thread exception')
+
+    watcher = threading.Thread(target=watcher_thread, daemon=True)
+    watcher.start()
 
     try:
         while not stop_event.is_set():
             cycle_start = time.time()
-            logger.info('Starting full-run cycle: scheduling all solvers against all teams')
+            logger.info('Starting full-run cycle: signaling all solver threads to run')
 
-            # schedule all solvers
+            # ensure worker thread exists for each solver and tell it to run
             all_solvers = sorted([p for p in (solvers_dir.glob('*.py') if solvers_dir.exists() else [])])
             scheduled = 0
             for s in all_solvers:
-                for tn, tip in teams.items():
-                    if schedule_solver_run(s, tn, tip):
-                        scheduled += 1
-            logger.info('Scheduled %d solver-team runs this cycle', scheduled)
+                q = ensure_solver_worker(s)
+                try:
+                    q.put_nowait('run_all')
+                    scheduled += 1
+                except queue.Full:
+                    logger.debug('Solver queue full for %s', s.name)
+
+            logger.info('Signaled %d solver threads this cycle', scheduled)
 
             # small grace to let some tasks finish and populate pending flags
             time.sleep(0.5)
@@ -499,12 +515,22 @@ def main_loop():
     except Exception:
         logger.exception('Main loop exception')
     finally:
-        logger.info('Shutting down: stopping watcher and executor')
+        logger.info('Shutting down: stopping watcher and solver threads')
         stop_event.set()
+        # ask solver threads to shutdown
+        with solver_threads_lock:
+            for k, v in solver_threads.items():
+                try:
+                    v['queue'].put_nowait('shutdown')
+                except Exception:
+                    pass
+            for k, v in solver_threads.items():
+                t = v.get('thread')
+                if t and t.is_alive():
+                    t.join(timeout=5)
+
         if watcher:
             watcher.join(timeout=5)
-        if executor:
-            executor.shutdown(wait=True)
         logger.info('Shutdown complete')
 
 if __name__ == '__main__':
