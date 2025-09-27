@@ -21,6 +21,7 @@ flag_format = r'[A-Z0-9]{31}='
 
 # Generate a few example flags
 for i in range(3):
+    random.seed(i)
     flag = ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=31)) + '='
     print(f"Found flag: {flag}", flush=True)
 
