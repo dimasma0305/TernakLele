@@ -13,11 +13,11 @@ if len(sys.argv) < 2:
     sys.exit(1)
 I = sys.argv[1]
 
-URL = f"http://10.0.38.9:4000{I}"
+URL = f"http://10.0.38.9:400{I}"
 
 class BaseAPI:
     def __init__(self, url=URL) -> None:
-        self.c = httpx.Client(base_url=url)
+        self.c = httpx.Client(base_url=url, timeout=15)
 
 class API(BaseAPI):
     def detail(self, name: str):
