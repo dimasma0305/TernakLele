@@ -1,3 +1,6 @@
-from app import app, celery
+try:
+    from app import app, celery
+    __all__ = ('app', 'celery')
+except Exception:
+    ...
 
-__all__ = ('app', 'celery')
