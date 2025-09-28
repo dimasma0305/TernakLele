@@ -6,7 +6,7 @@ CONFIG = {
     'DEBUG': os.getenv('DEBUG') == '1',
 
     'TEAMS': {
-        f'Team #{i}': f'{2*i - 1:02d}'
+        f'Team #{i}-{2*i - 1:02d}': f'{2*i - 1:02d}'
         for i in range(1, 16)
     },
     # 'FLAG_FORMAT': r'CTF\.Moscow\{[a-zA-Z\.0-9_-]+\}',
