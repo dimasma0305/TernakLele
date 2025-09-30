@@ -19,7 +19,7 @@ CONFIG = {
 
     'SYSTEM_PROTOCOL': 'ailurus',
     'SYSTEM_URL': 'https://api.ctf-compfest.com',
-    'TEAM_TOKEN': 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1ODk2ODMzMiwianRpIjoiYzY3Mzg5NzQtZTg2NC00ZjE3LTkyOTEtMWJmYmVkOTIzN2ZjIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ0ZWFtIjp7ImlkIjo4LCJuYW1lIjoiYXBhIHlhIGthPyJ9fSwibmJmIjoxNzU4OTY4MzMyLCJleHAiOjE3NTkwMTE1MzJ9.oq5hpSyTiOl7FVAnObP1Yl6NU915fuJGo4g8oMyYRct167VC819nTw3-7ZmU9V1QFe6pFnVfdz9TXyNPzoYlcA',
+    'TEAM_TOKEN': 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1OTAyNDg0MiwianRpIjoiM2U1MmM2ZTAtYzEwYS00OTJhLWFkYTItMTRlODlhMzAwNDBjIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ0ZWFtIjp7ImlkIjo4LCJuYW1lIjoiYXBhIHlhIGthPyJ9fSwibmJmIjoxNzU5MDI0ODQyLCJleHAiOjE3NTkwNjgwNDJ9.N35Yg08RPProq_5CKFTbcDbzLhgq-sk0VCXYhZhTQAM5OuuLADHIXoj_w19GI1emxhD7udCNLGyiXv82zFyfbw',
 
     # 'SYSTEM_HOST': '10.10.10.10',
     # 'SYSTEM_PORT': '31337',
@@ -29,8 +29,8 @@ CONFIG = {
     # 'SYSTEM_SERVER_KEY': validators.volgactf.get_public_key('https://final.volgactf.ru'),
 
     # this is for run.py
-    'SOLVER_TIMEOUT': 60,
-    'SUBMIT_GRACE_SECONDS': 5,
+    'SOLVER_TIMEOUT': 120,
+    'SUBMIT_GRACE_SECONDS': 1,
     'RUN_INTERVAL': 30,
     'WATCH_POLL': 2,
     'USE_THREADING': False,  # Set to False to run solvers synchronously (no threading)
