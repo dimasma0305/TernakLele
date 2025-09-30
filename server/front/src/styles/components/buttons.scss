@@ -11,21 +11,37 @@
   border: none;
   cursor: pointer;
   @include theme-transition(all);
+  min-height: 44px; // Minimum touch target size
+  min-width: 44px;
+  
+  @include mobile {
+    min-height: 48px; // Larger touch targets on mobile
+    min-width: 48px;
+    font-size: $font-size-body;
+  }
   
   // Button variants
   &.btn-primary {
     @include theme-background(var(--primary-light), var(--primary-dark));
     @include theme-color(var(--primary-contrast-light), var(--primary-contrast-dark));
     
-    &:hover:not(:disabled) {
-      @include theme-background(var(--primary-hover-light), var(--primary-hover-dark));
-      transform: translateY(-1px);
-      box-shadow: $shadow-md;
-    }
-    
-    &:active:not(:disabled) {
-      transform: translateY(0);
-    }
+  // Enhanced hover and active states
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    filter: brightness(1.05);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    filter: brightness(0.95);
+  }
+  
+  // Focus state
+  &:focus:not(:disabled) {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
   }
   
   &.btn-secondary {
@@ -109,20 +125,32 @@
   &.btn-loading {
     position: relative;
     pointer-events: none;
+    color: transparent !important;
     
     &::after {
       content: '';
       position: absolute;
-      width: 16px;
-      height: 16px;
-      border: 2px solid transparent;
-      border-top: 2px solid currentColor;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border: 2px solid currentColor;
       border-radius: 50%;
+      border-top-color: transparent;
       animation: btn-spin 1s linear infinite;
+      color: var(--primary-contrast);
     }
     
-    .btn-text {
-      opacity: 0;
+    // Improve loading state visibility
+    &.btn-primary::after {
+      border-color: var(--primary-contrast);
+      border-top-color: transparent;
+    }
+    
+    &.btn-secondary::after {
+      border-color: var(--text-primary);
+      border-top-color: transparent;
     }
   }
   

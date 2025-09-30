@@ -271,3 +271,53 @@
     }
   }
 }
+
+// Form validation messages with better visual hierarchy
+.form-message {
+  font-size: $font-size-caption;
+  margin-top: $spacing-xs;
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-xs;
+  line-height: 1.4;
+  
+  &.message-error {
+    color: var(--error);
+    
+    &::before {
+      content: '⚠';
+      flex-shrink: 0;
+      font-size: 1em;
+    }
+  }
+  
+  &.message-success {
+    color: var(--success);
+    
+    &::before {
+      content: '✓';
+      flex-shrink: 0;
+      font-size: 1em;
+    }
+  }
+  
+  &.message-warning {
+    color: var(--warning);
+    
+    &::before {
+      content: '⚠';
+      flex-shrink: 0;
+      font-size: 1em;
+    }
+  }
+  
+  &.message-info {
+    color: var(--info);
+    
+    &::before {
+      content: 'ⓘ';
+      flex-shrink: 0;
+      font-size: 1em;
+    }
+  }
+}

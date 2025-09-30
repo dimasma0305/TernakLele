@@ -3,59 +3,59 @@
 
 :root[data-theme='dark'] {
   // Brand Colors
-  --primary-dark: #3F51B5;
-  --primary-hover-dark: #5C6BC0;
-  --primary-contrast-dark: #FFFFFF;
+  --primary: #3F51B5;
+  --primary-hover: #5C6BC0;
+  --primary-contrast: #FFFFFF;
   
-  --secondary-dark: #4CAF50;
-  --secondary-hover-dark: #66BB6A;
-  --secondary-contrast-dark: #000000;
+  --secondary: #4CAF50;
+  --secondary-hover: #66BB6A;
+  --secondary-contrast: #000000;
   
-  --accent-dark: #FFC107;
-  --accent-hover-dark: #FFCA28;
-  --accent-contrast-dark: #000000;
+  --accent: #FFC107;
+  --accent-hover: #FFCA28;
+  --accent-contrast: #000000;
   
   // Background Colors
-  --background-primary-dark: #121212;
-  --background-secondary-dark: #1E1E1E;
-  --background-tertiary-dark: #2D2D2D;
+  --background-primary: #121212;
+  --background-secondary: #1E1E1E;
+  --background-tertiary: #2D2D2D;
   
   // Surface Colors
-  --surface-dark: #272727;
-  --surface-elevated-dark: #2D2D2D;
-  --surface-overlay-dark: rgba(39, 39, 39, 0.95);
+  --surface: #272727;
+  --surface-elevated: #2D2D2D;
+  --surface-overlay: rgba(39, 39, 39, 0.95);
   
-  // Text Colors
-  --text-primary-dark: #FFFFFF;
-  --text-secondary-dark: #AAAAAA;
-  --text-tertiary-dark: #757575;
-  --text-disabled-dark: #555555;
-  --text-inverse-dark: #121212;
+  // Text Colors - Improved contrast ratios
+  --text-primary: #FFFFFF;
+  --text-secondary: #CCCCCC; // Better contrast than #AAAAAA
+  --text-tertiary: #999999;  // Better contrast than #757575
+  --text-disabled: #666666;  // Better contrast than #555555
+  --text-inverse: #121212;
   
   // Border Colors
-  --border-dark: #404040;
-  --border-hover-dark: #555555;
-  --border-focus-dark: #3F51B5;
+  --border: #404040;
+  --border-hover: #555555;
+  --border-focus: #3F51B5;
   
   // State Colors
-  --success-dark: #4CAF50;
-  --success-hover-dark: #66BB6A;
-  --success-bg-dark: #1B5E20;
-  --warning-dark: #FFC107;
-  --warning-hover-dark: #FFCA28;
-  --warning-bg-dark: #E65100;
-  --error-dark: #F44336;
-  --error-hover-dark: #EF5350;
-  --error-bg-dark: #B71C1C;
-  --info-dark: #2196F3;
-  --info-hover-dark: #42A5F5;
-  --info-bg-dark: #0D47A1;
+  --success: #4CAF50;
+  --success-hover: #66BB6A;
+  --success-bg: #1B5E20;
+  --warning: #FFC107;
+  --warning-hover: #FFCA28;
+  --warning-bg: #E65100;
+  --error: #F44336;
+  --error-hover: #EF5350;
+  --error-bg: #B71C1C;
+  --info: #2196F3;
+  --info-hover: #42A5F5;
+  --info-bg: #0D47A1;
   
   // Interactive States
-  --hover-dark: rgba(255, 255, 255, 0.08);
-  --active-dark: rgba(255, 255, 255, 0.12);
-  --focus-ring-dark: rgba(63, 81, 181, 0.4);
-  --selected-dark: rgba(63, 81, 181, 0.16);
+  --hover: rgba(255, 255, 255, 0.08);
+  --active: rgba(255, 255, 255, 0.12);
+  --focus-ring: rgba(63, 81, 181, 0.4);
+  --selected: rgba(63, 81, 181, 0.16);
   
   // Focus rings for form states
   --error-focus-ring: rgba(244, 67, 54, 0.4);
@@ -63,26 +63,80 @@
   --warning-focus-ring: rgba(255, 193, 7, 0.4);
   
   // Shadows
-  --shadow-sm-dark: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-lg-dark: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
   
   // CTF Specific Colors
-  --flag-dark: #4CAF50;
-  --flag-submitted-dark: #2196F3;
-  --flag-rejected-dark: #F44336;
-  --flag-pending-dark: #FF9800;
+  --flag: #4CAF50;
+  --flag-submitted: #2196F3;
+  --flag-rejected: #F44336;
+  --flag-pending: #FF9800;
   
-  --team-friendly-dark: #4CAF50;
-  --team-enemy-dark: #F44336;
-  --team-neutral-dark: #AAAAAA;
+  --team-friendly: #4CAF50;
+  --team-enemy: #F44336;
+  --team-neutral: #AAAAAA;
   
   // Code Syntax Highlighting
-  --code-bg-dark: #1E1E1E;
-  --code-border-dark: #404040;
-  --code-text-dark: #E1E4E8;
-  --code-keyword-dark: #F97583;
-  --code-string-dark: #9ECBFF;
-  --code-comment-dark: #6A737D;
-  --code-number-dark: #79B8FF;
+  --code-bg: #1E1E1E;
+  --code-border: #404040;
+  --code-text: #E1E4E8;
+  --code-keyword: #F97583;
+  --code-string: #9ECBFF;
+  --code-comment: #6A737D;
+  --code-number: #79B8FF;
+  
+  // Keep old variables for compatibility
+  --primary-dark: var(--primary);
+  --primary-hover-dark: var(--primary-hover);
+  --primary-contrast-dark: var(--primary-contrast);
+  --secondary-dark: var(--secondary);
+  --secondary-hover-dark: var(--secondary-hover);
+  --secondary-contrast-dark: var(--secondary-contrast);
+  --accent-dark: var(--accent);
+  --accent-hover-dark: var(--accent-hover);
+  --accent-contrast-dark: var(--accent-contrast);
+  --background-primary-dark: var(--background-primary);
+  --background-secondary-dark: var(--background-secondary);
+  --background-tertiary-dark: var(--background-tertiary);
+  --surface-dark: var(--surface);
+  --surface-elevated-dark: var(--surface-elevated);
+  --text-primary-dark: var(--text-primary);
+  --text-secondary-dark: var(--text-secondary);
+  --text-tertiary-dark: var(--text-tertiary);
+  --border-dark: var(--border);
+  --border-hover-dark: var(--border-hover);
+  --success-dark: var(--success);
+  --success-hover-dark: var(--success-hover);
+  --success-bg-dark: var(--success-bg);
+  --warning-dark: var(--warning);
+  --warning-hover-dark: var(--warning-hover);
+  --warning-bg-dark: var(--warning-bg);
+  --error-dark: var(--error);
+  --error-hover-dark: var(--error-hover);
+  --error-bg-dark: var(--error-bg);
+  --info-dark: var(--info);
+  --info-hover-dark: var(--info-hover);
+  --info-bg-dark: var(--info-bg);
+  --hover-dark: var(--hover);
+  --active-dark: var(--active);
+  --focus-ring-dark: var(--focus-ring);
+  --selected-dark: var(--selected);
+  --shadow-sm-dark: var(--shadow-sm);
+  --shadow-md-dark: var(--shadow-md);
+  --shadow-lg-dark: var(--shadow-lg);
+  --flag-dark: var(--flag);
+  --flag-submitted-dark: var(--flag-submitted);
+  --flag-rejected-dark: var(--flag-rejected);
+  --flag-pending-dark: var(--flag-pending);
+  --team-friendly-dark: var(--team-friendly);
+  --team-enemy-dark: var(--team-enemy);
+  --team-neutral-dark: var(--team-neutral);
+  --code-bg-dark: var(--code-bg);
+  --code-border-dark: var(--code-border);
+  --code-text-dark: var(--code-text);
+  --code-keyword-dark: var(--code-keyword);
+  --code-string-dark: var(--code-string);
+  --code-comment-dark: var(--code-comment);
+  --code-number-dark: var(--code-number);
 }

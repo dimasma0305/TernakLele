@@ -141,17 +141,23 @@ export default {
 }
 
 .modern-toolbar {
-  padding: 0 1rem;
+  padding: 0 $spacing-lg;
   min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
+  gap: $spacing-lg;
   
-  @media (max-width: 599px) {
-    padding: 0 0.5rem;
-    gap: 1rem;
+  @include mobile-and-tablet {
+    padding: 0 $spacing-md;
+    gap: $spacing-md;
     min-height: 56px;
+  }
+  
+  @include mobile {
+    padding: 0 $spacing-sm;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
   }
 }
 
@@ -159,17 +165,19 @@ export default {
 .brand-section {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: $spacing-sm;
   flex-shrink: 0;
+  min-width: 0; // Allows text truncation
   
   .brand-avatar {
     background: var(--primary);
     border: 2px solid var(--border);
-    transition: all 200ms ease-out;
+    transition: all $transition-normal ease-out;
+    flex-shrink: 0;
     
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: var(--shadow-md);
     }
     
     img {
@@ -182,25 +190,30 @@ export default {
   .brand-text {
     display: flex;
     flex-direction: column;
+    min-width: 0;
     
-    @media (max-width: 479px) {
+    @include mobile {
       display: none;
     }
     
     .brand-title {
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: $font-size-h3;
+      font-weight: $font-weight-bold;
       color: var(--text-primary);
       line-height: 1.2;
       letter-spacing: -0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     
     .brand-subtitle {
-      font-size: 0.75rem;
+      font-size: $font-size-caption;
       color: var(--text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      font-weight: 500;
+      font-weight: $font-weight-medium;
+      white-space: nowrap;
     }
   }
 }
@@ -210,9 +223,14 @@ export default {
   flex: 1;
   display: flex;
   justify-content: center;
+  min-width: 0;
   
-  @media (max-width: 599px) {
+  @include mobile-and-tablet {
     flex: none;
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    margin-top: $spacing-sm;
   }
 }
 

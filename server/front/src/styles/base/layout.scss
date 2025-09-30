@@ -6,23 +6,48 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 $spacing-md;
+  padding: 0 $spacing-lg;
   
   @include mobile {
-    padding: 0 $spacing-sm;
+    padding: 0 $spacing-md;
   }
   
   @include desktop {
-    padding: 0 $spacing-lg;
+    padding: 0 $spacing-xl;
   }
 }
 
 .container-fluid {
   width: 100%;
-  padding: 0 $spacing-md;
+  padding: 0 $spacing-lg;
   
   @include mobile {
-    padding: 0 $spacing-sm;
+    padding: 0 $spacing-md;
+  }
+}
+
+// Improved spacing system
+.section {
+  padding: $spacing-xxl 0;
+  
+  @include mobile {
+    padding: $spacing-xl 0;
+  }
+}
+
+.section-sm {
+  padding: $spacing-xl 0;
+  
+  @include mobile {
+    padding: $spacing-lg 0;
+  }
+}
+
+.section-lg {
+  padding: 4rem 0;
+  
+  @include mobile {
+    padding: $spacing-xxl 0;
   }
 }
 

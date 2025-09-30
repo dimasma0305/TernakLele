@@ -95,14 +95,30 @@ input, textarea, select {
   outline: none;
 }
 
-// Focus styles
+// Enhanced focus styles for accessibility
 :focus {
-  outline: 2px solid var(--focus-ring-light);
+  outline: 3px solid var(--focus-ring); // Thicker outline
   outline-offset: 2px;
+  border-radius: $border-radius-sm;
 }
 
-:root[data-theme='dark'] :focus {
-  outline-color: var(--focus-ring-dark);
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: $border-radius-sm;
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  :focus,
+  :focus-visible {
+    outline: 4px solid;
+    outline-color: Highlight;
+  }
 }
 
 // Selection styles

@@ -3,59 +3,59 @@
 
 :root {
   // Brand Colors
-  --primary-light: #1A237E;
-  --primary-hover-light: #303F9F;
-  --primary-contrast-light: #FFFFFF;
+  --primary: #1A237E;
+  --primary-hover: #303F9F;
+  --primary-contrast: #FFFFFF;
   
-  --secondary-light: #00C851;
-  --secondary-hover-light: #00A041;
-  --secondary-contrast-light: #FFFFFF;
+  --secondary: #00C851;
+  --secondary-hover: #00A041;
+  --secondary-contrast: #FFFFFF;
   
-  --accent-light: #FF8F00;
-  --accent-hover-light: #FF6F00;
-  --accent-contrast-light: #FFFFFF;
+  --accent: #FF8F00;
+  --accent-hover: #FF6F00;
+  --accent-contrast: #FFFFFF;
   
   // Background Colors
-  --background-primary-light: #FFFFFF;
-  --background-secondary-light: #F5F5F5;
-  --background-tertiary-light: #EEEEEE;
+  --background-primary: #FFFFFF;
+  --background-secondary: #F5F5F5;
+  --background-tertiary: #EEEEEE;
   
   // Surface Colors
-  --surface-light: #FFFFFF;
-  --surface-elevated-light: #FFFFFF;
-  --surface-overlay-light: rgba(255, 255, 255, 0.95);
+  --surface: #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --surface-overlay: rgba(255, 255, 255, 0.95);
   
-  // Text Colors
-  --text-primary-light: #212121;
-  --text-secondary-light: #757575;
-  --text-tertiary-light: #9E9E9E;
-  --text-disabled-light: #BDBDBD;
-  --text-inverse-light: #FFFFFF;
+  // Text Colors - Improved contrast ratios
+  --text-primary: #1A1A1A;  // Darker for better contrast
+  --text-secondary: #666666; // Better contrast than #757575
+  --text-tertiary: #888888;  // Better contrast than #9E9E9E
+  --text-disabled: #AAAAAA;
+  --text-inverse: #FFFFFF;
   
   // Border Colors
-  --border-light: #E0E0E0;
-  --border-hover-light: #BDBDBD;
-  --border-focus-light: #1A237E;
+  --border: #E0E0E0;
+  --border-hover: #BDBDBD;
+  --border-focus: #1A237E;
   
   // State Colors
-  --success-light: #00C851;
-  --success-hover-light: #00A041;
-  --success-bg-light: #E8F5E8;
-  --warning-light: #FF8F00;
-  --warning-hover-light: #FF6F00;
-  --warning-bg-light: #FFF3E0;
-  --error-light: #F44336;
-  --error-hover-light: #D32F2F;
-  --error-bg-light: #FFEBEE;
-  --info-light: #2196F3;
-  --info-hover-light: #1976D2;
-  --info-bg-light: #E3F2FD;
+  --success: #00C851;
+  --success-hover: #00A041;
+  --success-bg: #E8F5E8;
+  --warning: #FF8F00;
+  --warning-hover: #FF6F00;
+  --warning-bg: #FFF3E0;
+  --error: #F44336;
+  --error-hover: #D32F2F;
+  --error-bg: #FFEBEE;
+  --info: #2196F3;
+  --info-hover: #1976D2;
+  --info-bg: #E3F2FD;
   
   // Interactive States
-  --hover-light: rgba(0, 0, 0, 0.04);
-  --active-light: rgba(0, 0, 0, 0.08);
-  --focus-ring-light: rgba(26, 35, 126, 0.2);
-  --selected-light: rgba(26, 35, 126, 0.08);
+  --hover: rgba(0, 0, 0, 0.04);
+  --active: rgba(0, 0, 0, 0.08);
+  --focus-ring: rgba(26, 35, 126, 0.2);
+  --selected: rgba(26, 35, 126, 0.08);
   
   // Focus rings for form states
   --error-focus-ring: rgba(244, 67, 54, 0.2);
@@ -63,26 +63,80 @@
   --warning-focus-ring: rgba(255, 143, 0, 0.2);
   
   // Shadows
-  --shadow-sm-light: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg-light: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   
   // CTF Specific Colors
-  --flag-light: #4CAF50;
-  --flag-submitted-light: #2196F3;
-  --flag-rejected-light: #F44336;
-  --flag-pending-light: #FF9800;
+  --flag: #4CAF50;
+  --flag-submitted: #2196F3;
+  --flag-rejected: #F44336;
+  --flag-pending: #FF9800;
   
-  --team-friendly-light: #00C851;
-  --team-enemy-light: #F44336;
-  --team-neutral-light: #757575;
+  --team-friendly: #00C851;
+  --team-enemy: #F44336;
+  --team-neutral: #757575;
   
   // Code Syntax Highlighting
-  --code-bg-light: #F8F9FA;
-  --code-border-light: #E9ECEF;
-  --code-text-light: #495057;
-  --code-keyword-light: #D73A49;
-  --code-string-light: #032F62;
-  --code-comment-light: #6A737D;
-  --code-number-light: #005CC5;
+  --code-bg: #F8F9FA;
+  --code-border: #E9ECEF;
+  --code-text: #495057;
+  --code-keyword: #D73A49;
+  --code-string: #032F62;
+  --code-comment: #6A737D;
+  --code-number: #005CC5;
+  
+  // Keep old variables for compatibility
+  --primary-light: var(--primary);
+  --primary-hover-light: var(--primary-hover);
+  --primary-contrast-light: var(--primary-contrast);
+  --secondary-light: var(--secondary);
+  --secondary-hover-light: var(--secondary-hover);
+  --secondary-contrast-light: var(--secondary-contrast);
+  --accent-light: var(--accent);
+  --accent-hover-light: var(--accent-hover);
+  --accent-contrast-light: var(--accent-contrast);
+  --background-primary-light: var(--background-primary);
+  --background-secondary-light: var(--background-secondary);
+  --background-tertiary-light: var(--background-tertiary);
+  --surface-light: var(--surface);
+  --surface-elevated-light: var(--surface-elevated);
+  --text-primary-light: var(--text-primary);
+  --text-secondary-light: var(--text-secondary);
+  --text-tertiary-light: var(--text-tertiary);
+  --border-light: var(--border);
+  --border-hover-light: var(--border-hover);
+  --success-light: var(--success);
+  --success-hover-light: var(--success-hover);
+  --success-bg-light: var(--success-bg);
+  --warning-light: var(--warning);
+  --warning-hover-light: var(--warning-hover);
+  --warning-bg-light: var(--warning-bg);
+  --error-light: var(--error);
+  --error-hover-light: var(--error-hover);
+  --error-bg-light: var(--error-bg);
+  --info-light: var(--info);
+  --info-hover-light: var(--info-hover);
+  --info-bg-light: var(--info-bg);
+  --hover-light: var(--hover);
+  --active-light: var(--active);
+  --focus-ring-light: var(--focus-ring);
+  --selected-light: var(--selected);
+  --shadow-sm-light: var(--shadow-sm);
+  --shadow-md-light: var(--shadow-md);
+  --shadow-lg-light: var(--shadow-lg);
+  --flag-light: var(--flag);
+  --flag-submitted-light: var(--flag-submitted);
+  --flag-rejected-light: var(--flag-rejected);
+  --flag-pending-light: var(--flag-pending);
+  --team-friendly-light: var(--team-friendly);
+  --team-enemy-light: var(--team-enemy);
+  --team-neutral-light: var(--team-neutral);
+  --code-bg-light: var(--code-bg);
+  --code-border-light: var(--code-border);
+  --code-text-light: var(--code-text);
+  --code-keyword-light: var(--code-keyword);
+  --code-string-light: var(--code-string);
+  --code-comment-light: var(--code-comment);
+  --code-number-light: var(--code-number);
 }
