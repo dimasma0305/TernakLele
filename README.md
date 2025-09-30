@@ -14,4 +14,6 @@ Some screenshots:
 
 ![flags](resources/flags.png)
 
+![flags2](resources/flags2.png)
+
 ![teams](resources/teams.png)
