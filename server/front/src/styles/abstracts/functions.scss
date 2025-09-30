@@ -1,0 +1,63 @@
+// Theme Utility Functions
+// ========================
+
+// Color manipulation functions (using built-in Sass functions)
+@function lighten-color($color, $amount) {
+  @return lighten($color, $amount);
+}
+
+@function darken-color($color, $amount) {
+  @return darken($color, $amount);
+}
+
+@function alpha-color($color, $alpha) {
+  @return rgba($color, $alpha);
+}
+
+// Convert px to rem
+@function rem($pixels, $base: 16) {
+  @return #{$pixels / $base}rem;
+}
+
+// Convert px to em
+@function em($pixels, $base: 16) {
+  @return #{$pixels / $base}em;
+}
+
+// Strip unit from a value
+@function strip-unit($value) {
+  @return $value / ($value * 0 + 1);
+}
+
+// Calculate responsive font size
+@function responsive-font-size($min-size, $max-size, $min-vw, $max-vw) {
+  $slope: ($max-size - $min-size) / ($max-vw - $min-vw);
+  $intercept: $min-size - $slope * $min-vw;
+  @return clamp(#{$min-size}, #{$intercept} + #{$slope * 100}vw, #{$max-size});
+}
+
+// Generate theme-aware CSS custom property
+@function theme-var($property) {
+  @return var(--#{$property});
+}
+
+// Calculate contrast ratio (basic implementation)
+@function contrast-ratio($color1, $color2) {
+  $l1: lightness($color1);
+  $l2: lightness($color2);
+  
+  @if $l1 > $l2 {
+    @return ($l1 + 5) / ($l2 + 5);
+  } @else {
+    @return ($l2 + 5) / ($l1 + 5);
+  }
+}
+
+// Get accessible text color based on background
+@function accessible-color($bg-color, $light-color: #ffffff, $dark-color: #000000) {
+  @if contrast-ratio($bg-color, $light-color) > contrast-ratio($bg-color, $dark-color) {
+    @return $light-color;
+  } @else {
+    @return $dark-color;
+  }
+}

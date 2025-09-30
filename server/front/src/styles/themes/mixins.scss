@@ -1,0 +1,110 @@
+// Theme Switching Mixins and Utilities
+// =====================================
+
+// Mixin to apply both light and dark theme values
+@mixin theme-aware($property, $light-value, $dark-value) {
+  #{$property}: #{$light-value};
+  
+  :root[data-theme='dark'] & {
+    #{$property}: #{$dark-value};
+  }
+}
+
+// Shorthand mixins for common theme properties
+@mixin theme-background($light-value, $dark-value) {
+  @include theme-aware(background-color, $light-value, $dark-value);
+}
+
+@mixin theme-color($light-value, $dark-value) {
+  @include theme-aware(color, $light-value, $dark-value);
+}
+
+@mixin theme-border($light-value, $dark-value) {
+  @include theme-aware(border-color, $light-value, $dark-value);
+}
+
+@mixin theme-shadow($light-value, $dark-value) {
+  @include theme-aware(box-shadow, $light-value, $dark-value);
+}
+
+// Theme transition animation
+@mixin theme-transition($properties: all, $duration: 200ms) {
+  transition: #{$properties} #{$duration} ease-in-out;
+  
+  // Disable transitions during theme initialization
+  .theme-transitioning & {
+    transition: none !important;
+  }
+}
+
+// CSS Custom Property helpers
+@function theme-var($name, $fallback: null) {
+  @if $fallback {
+    @return var(--#{$name}, #{$fallback});
+  } @else {
+    @return var(--#{$name});
+  }
+}
+
+// Auto theme variables (use current theme values)
+@mixin use-theme-vars {
+  // Primary colors
+  --primary: var(--primary-light);
+  --primary-hover: var(--primary-hover-light);
+  --primary-contrast: var(--primary-contrast-light);
+  
+  // Background colors
+  --background-primary: var(--background-primary-light);
+  --background-secondary: var(--background-secondary-light);
+  --surface: var(--surface-light);
+  
+  // Text colors
+  --text-primary: var(--text-primary-light);
+  --text-secondary: var(--text-secondary-light);
+  
+  // Border colors
+  --border: var(--border-light);
+  --border-hover: var(--border-hover-light);
+  
+  // Interactive states
+  --hover: var(--hover-light);
+  --active: var(--active-light);
+  --focus-ring: var(--focus-ring-light);
+  
+  // Update for dark theme
+  :root[data-theme='dark'] & {
+    --primary: var(--primary-dark);
+    --primary-hover: var(--primary-hover-dark);
+    --primary-contrast: var(--primary-contrast-dark);
+    
+    --background-primary: var(--background-primary-dark);
+    --background-secondary: var(--background-secondary-dark);
+    --surface: var(--surface-dark);
+    
+    --text-primary: var(--text-primary-dark);
+    --text-secondary: var(--text-secondary-dark);
+    
+    --border: var(--border-dark);
+    --border-hover: var(--border-hover-dark);
+    
+    --hover: var(--hover-dark);
+    --active: var(--active-dark);
+    --focus-ring: var(--focus-ring-dark);
+  }
+}
+
+// Quasar compatibility mixins
+@mixin quasar-theme-override {
+  // Override Quasar's default theming with our custom variables
+  .q-dark {
+    --q-primary: var(--primary-dark) !important;
+    --q-secondary: var(--secondary-dark) !important;
+    --q-accent: var(--accent-dark) !important;
+    --q-positive: var(--success-dark) !important;
+    --q-negative: var(--error-dark) !important;
+    --q-info: var(--info-dark) !important;
+    --q-warning: var(--warning-dark) !important;
+    --q-dark: var(--background-primary-dark) !important;
+    --q-dark-page: var(--background-primary-dark) !important;
+  }
+}

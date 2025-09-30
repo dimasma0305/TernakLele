@@ -1,0 +1,273 @@
+// Form Components
+// ================
+
+// Base form styles
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.form-row {
+  display: flex;
+  gap: $spacing-md;
+  
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+// Labels
+.form-label {
+  font-size: $font-size-caption;
+  font-weight: $font-weight-medium;
+  @include theme-color(var(--text-primary-light), var(--text-primary-dark));
+  margin-bottom: $spacing-xs;
+  
+  &.required::after {
+    content: ' *';
+    @include theme-color(var(--error-light), var(--error-dark));
+  }
+}
+
+// Input fields
+.form-input {
+  @include input-style();
+  min-height: 40px;
+  
+  &.input-sm {
+    min-height: 32px;
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-caption;
+  }
+  
+  &.input-lg {
+    min-height: 48px;
+    padding: $spacing-md $spacing-lg;
+    font-size: $font-size-h3;
+  }
+  
+  // Input states
+  &.input-error {
+    @include theme-border(var(--error-light), var(--error-dark));
+    
+    &:focus {
+      box-shadow: 0 0 0 3px alpha-color(var(--error-light), 0.2);
+    }
+  }
+  
+  &.input-success {
+    @include theme-border(var(--success-light), var(--success-dark));
+    
+    &:focus {
+      box-shadow: 0 0 0 3px alpha-color(var(--success-light), 0.2);
+    }
+  }
+  
+  &.input-warning {
+    @include theme-border(var(--warning-light), var(--warning-dark));
+    
+    &:focus {
+      box-shadow: 0 0 0 3px alpha-color(var(--warning-light), 0.2);
+    }
+  }
+}
+
+// Textarea
+.form-textarea {
+  @extend .form-input;
+  min-height: 80px;
+  resize: vertical;
+  font-family: $font-family-primary;
+  line-height: $line-height-code;
+}
+
+// Select
+.form-select {
+  @extend .form-input;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right $spacing-sm center;
+  background-repeat: no-repeat;
+  background-size: 16px 12px;
+  padding-right: 2.5rem;
+  appearance: none;
+  
+  &:focus {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233f51b5' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  }
+}
+
+// Checkbox and Radio
+.form-checkbox,
+.form-radio {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  cursor: pointer;
+  
+  input {
+    width: 16px;
+    height: 16px;
+    @include theme-border(var(--border-light), var(--border-dark));
+    border: 2px solid;
+    background: transparent;
+    cursor: pointer;
+    
+    &:checked {
+      @include theme-background(var(--primary-light), var(--primary-dark));
+      @include theme-border(var(--primary-light), var(--primary-dark));
+    }
+    
+    &:focus {
+      outline: 2px solid var(--focus-ring-light);
+      outline-offset: 2px;
+    }
+  }
+  
+  label {
+    @include theme-color(var(--text-primary-light), var(--text-primary-dark));
+    cursor: pointer;
+    font-size: $font-size-body;
+  }
+}
+
+.form-checkbox input {
+  border-radius: $border-radius-sm;
+}
+
+.form-radio input {
+  border-radius: 50%;
+}
+
+// Input group (with icons or buttons)
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  
+  .form-input {
+    flex: 1;
+  }
+  
+  .input-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    @include theme-color(var(--text-secondary-light), var(--text-secondary-dark));
+    pointer-events: none;
+    
+    &.icon-left {
+      left: $spacing-sm;
+    }
+    
+    &.icon-right {
+      right: $spacing-sm;
+    }
+  }
+  
+  .input-icon.icon-left + .form-input {
+    padding-left: 2.5rem;
+  }
+  
+  .input-icon.icon-right ~ .form-input {
+    padding-right: 2.5rem;
+  }
+  
+  .input-button {
+    margin-left: -1px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
+
+// Floating labels
+.floating-label {
+  position: relative;
+  
+  .form-input {
+    padding-top: $spacing-lg;
+    
+    &::placeholder {
+      opacity: 0;
+    }
+    
+    &:focus::placeholder {
+      opacity: 0.6;
+    }
+  }
+  
+  .form-label {
+    position: absolute;
+    top: $spacing-sm;
+    left: $spacing-md;
+    @include theme-color(var(--text-secondary-light), var(--text-secondary-dark));
+    @include theme-transition(all);
+    pointer-events: none;
+    font-size: $font-size-caption;
+    font-weight: $font-weight-regular;
+  }
+  
+  .form-input:focus + .form-label,
+  .form-input:not(:placeholder-shown) + .form-label {
+    top: $spacing-xs;
+    font-size: 0.75rem;
+    @include theme-color(var(--primary-light), var(--primary-dark));
+  }
+}
+
+// Form validation messages
+.form-message {
+  font-size: $font-size-caption;
+  margin-top: $spacing-xs;
+  
+  &.message-error {
+    @include theme-color(var(--error-light), var(--error-dark));
+  }
+  
+  &.message-success {
+    @include theme-color(var(--success-light), var(--success-dark));
+  }
+  
+  &.message-warning {
+    @include theme-color(var(--warning-light), var(--warning-dark));
+  }
+  
+  &.message-info {
+    @include theme-color(var(--info-light), var(--info-dark));
+  }
+}
+
+// Form layout helpers
+.form-inline {
+  display: flex;
+  align-items: end;
+  gap: $spacing-md;
+  
+  .form-group {
+    flex: 1;
+  }
+  
+  @include mobile {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.form-horizontal {
+  .form-group {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: $spacing-md;
+    align-items: center;
+    
+    @include mobile {
+      grid-template-columns: 1fr;
+    }
+  }
+}

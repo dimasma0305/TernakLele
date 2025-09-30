@@ -1,0 +1,74 @@
+// Theme Variables for Ternak Lele CTF Platform
+// ============================================
+
+// Breakpoints
+$breakpoint-xs: 0;
+$breakpoint-sm: 600px;
+$breakpoint-md: 1024px;
+$breakpoint-lg: 1440px;
+$breakpoint-xl: 1920px;
+
+// Typography
+$font-family-primary: 'JetBrains Mono', 'Source Code Pro', 'Consolas', monospace;
+$font-family-fallback: 'Source Code Pro', 'Consolas', monospace;
+
+// Font Weights
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+
+// Font Sizes
+$font-size-display: 2.5rem;    // 40px
+$font-size-h1: 2rem;           // 32px
+$font-size-h2: 1.5rem;         // 24px
+$font-size-body: 1rem;         // 16px
+$font-size-caption: 0.875rem;  // 14px
+$font-size-code: 0.875rem;     // 14px
+
+// Line Heights
+$line-height-display: 1.2;
+$line-height-h1: 1.3;
+$line-height-h2: 1.4;
+$line-height-body: 1.5;
+$line-height-caption: 1.4;
+$line-height-code: 1.6;
+
+// Spacing Scale
+$spacing-xs: 0.25rem;   // 4px
+$spacing-sm: 0.5rem;    // 8px
+$spacing-md: 1rem;      // 16px
+$spacing-lg: 1.5rem;    // 24px
+$spacing-xl: 2rem;      // 32px
+$spacing-xxl: 3rem;     // 48px
+
+// Border Radius
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 16px;
+
+// Shadows
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+// Animation Timing
+$transition-fast: 100ms;
+$transition-normal: 200ms;
+$transition-slow: 300ms;
+
+// Animation Easing
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-out: cubic-bezier(0, 0, 0.2, 1);
+$ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+// Z-Index Scale
+$z-index-dropdown: 1000;
+$z-index-sticky: 1010;
+$z-index-fixed: 1020;
+$z-index-modal-backdrop: 1030;
+$z-index-modal: 1040;
+$z-index-popover: 1050;
+$z-index-tooltip: 1060;

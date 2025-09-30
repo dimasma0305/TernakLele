@@ -1,0 +1,188 @@
+// Button Components
+// =================
+
+.btn {
+  @include button-style();
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  @include theme-transition(all);
+  
+  // Button variants
+  &.btn-primary {
+    @include theme-background(var(--primary-light), var(--primary-dark));
+    @include theme-color(var(--primary-contrast-light), var(--primary-contrast-dark));
+    
+    &:hover:not(:disabled) {
+      @include theme-background(var(--primary-hover-light), var(--primary-hover-dark));
+      transform: translateY(-1px);
+      box-shadow: $shadow-md;
+    }
+    
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+  }
+  
+  &.btn-secondary {
+    @include theme-background(transparent, transparent);
+    @include theme-color(var(--text-primary-light), var(--text-primary-dark));
+    @include theme-border(var(--border-light), var(--border-dark));
+    border: 1px solid;
+    
+    &:hover:not(:disabled) {
+      @include theme-background(var(--hover-light), var(--hover-dark));
+    }
+    
+    &:active:not(:disabled) {
+      @include theme-background(var(--active-light), var(--active-dark));
+    }
+  }
+  
+  &.btn-ghost {
+    @include theme-background(transparent, transparent);
+    @include theme-color(var(--primary-light), var(--primary-dark));
+    border: none;
+    
+    &:hover:not(:disabled) {
+      @include theme-background(var(--hover-light), var(--hover-dark));
+    }
+    
+    &:active:not(:disabled) {
+      @include theme-background(var(--active-light), var(--active-dark));
+    }
+  }
+  
+  &.btn-success {
+    @include theme-background(var(--success-light), var(--success-dark));
+    color: white;
+    
+    &:hover:not(:disabled) {
+      @include theme-background(darken(var(--success-light), 10%), lighten(var(--success-dark), 10%));
+    }
+  }
+  
+  &.btn-warning {
+    @include theme-background(var(--warning-light), var(--warning-dark));
+    color: white;
+    
+    &:hover:not(:disabled) {
+      @include theme-background(darken(var(--warning-light), 10%), lighten(var(--warning-dark), 10%));
+    }
+  }
+  
+  &.btn-error {
+    @include theme-background(var(--error-light), var(--error-dark));
+    color: white;
+    
+    &:hover:not(:disabled) {
+      @include theme-background(darken(var(--error-light), 10%), lighten(var(--error-dark), 10%));
+    }
+  }
+  
+  // Button sizes
+  &.btn-sm {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-caption;
+  }
+  
+  &.btn-lg {
+    padding: $spacing-md $spacing-lg;
+    font-size: $font-size-h3;
+  }
+  
+  // Button states
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  
+  &.btn-loading {
+    position: relative;
+    pointer-events: none;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border: 2px solid transparent;
+      border-top: 2px solid currentColor;
+      border-radius: 50%;
+      animation: btn-spin 1s linear infinite;
+    }
+    
+    .btn-text {
+      opacity: 0;
+    }
+  }
+  
+  // Icon buttons
+  &.btn-icon {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    
+    &.btn-sm {
+      width: 32px;
+      height: 32px;
+    }
+    
+    &.btn-lg {
+      width: 48px;
+      height: 48px;
+    }
+  }
+}
+
+// Button group
+.btn-group {
+  display: inline-flex;
+  
+  .btn {
+    border-radius: 0;
+    
+    &:first-child {
+      border-top-left-radius: $border-radius-md;
+      border-bottom-left-radius: $border-radius-md;
+    }
+    
+    &:last-child {
+      border-top-right-radius: $border-radius-md;
+      border-bottom-right-radius: $border-radius-md;
+    }
+    
+    &:not(:last-child) {
+      border-right: none;
+    }
+  }
+}
+
+// Floating action button
+.fab {
+  @extend .btn;
+  position: fixed;
+  bottom: $spacing-lg;
+  right: $spacing-lg;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  box-shadow: $shadow-lg;
+  z-index: $z-index-fixed;
+  
+  &:hover {
+    box-shadow: $shadow-xl;
+  }
+}
+
+@keyframes btn-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

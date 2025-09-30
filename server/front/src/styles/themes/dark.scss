@@ -1,0 +1,79 @@
+// Dark Theme Color Definitions
+// ==============================
+
+:root[data-theme='dark'] {
+  // Brand Colors
+  --primary-dark: #3F51B5;
+  --primary-hover-dark: #5C6BC0;
+  --primary-contrast-dark: #FFFFFF;
+  
+  --secondary-dark: #4CAF50;
+  --secondary-hover-dark: #66BB6A;
+  --secondary-contrast-dark: #000000;
+  
+  --accent-dark: #FFC107;
+  --accent-hover-dark: #FFCA28;
+  --accent-contrast-dark: #000000;
+  
+  // Background Colors
+  --background-primary-dark: #121212;
+  --background-secondary-dark: #1E1E1E;
+  --background-tertiary-dark: #2D2D2D;
+  
+  // Surface Colors
+  --surface-dark: #272727;
+  --surface-elevated-dark: #2D2D2D;
+  --surface-overlay-dark: rgba(39, 39, 39, 0.95);
+  
+  // Text Colors
+  --text-primary-dark: #FFFFFF;
+  --text-secondary-dark: #AAAAAA;
+  --text-tertiary-dark: #757575;
+  --text-disabled-dark: #555555;
+  --text-inverse-dark: #121212;
+  
+  // Border Colors
+  --border-dark: #404040;
+  --border-hover-dark: #555555;
+  --border-focus-dark: #3F51B5;
+  
+  // State Colors
+  --success-dark: #4CAF50;
+  --success-bg-dark: #1B5E20;
+  --warning-dark: #FFC107;
+  --warning-bg-dark: #E65100;
+  --error-dark: #F44336;
+  --error-bg-dark: #B71C1C;
+  --info-dark: #2196F3;
+  --info-bg-dark: #0D47A1;
+  
+  // Interactive States
+  --hover-dark: rgba(255, 255, 255, 0.08);
+  --active-dark: rgba(255, 255, 255, 0.12);
+  --focus-ring-dark: rgba(63, 81, 181, 0.4);
+  --selected-dark: rgba(63, 81, 181, 0.16);
+  
+  // Shadows
+  --shadow-sm-dark: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg-dark: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  
+  // CTF Specific Colors
+  --flag-dark: #4CAF50;
+  --flag-submitted-dark: #2196F3;
+  --flag-rejected-dark: #F44336;
+  --flag-pending-dark: #FF9800;
+  
+  --team-friendly-dark: #4CAF50;
+  --team-enemy-dark: #F44336;
+  --team-neutral-dark: #AAAAAA;
+  
+  // Code Syntax Highlighting
+  --code-bg-dark: #1E1E1E;
+  --code-border-dark: #404040;
+  --code-text-dark: #E1E4E8;
+  --code-keyword-dark: #F97583;
+  --code-string-dark: #9ECBFF;
+  --code-comment-dark: #6A737D;
+  --code-number-dark: #79B8FF;
+}

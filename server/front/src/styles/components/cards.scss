@@ -1,0 +1,275 @@
+// Card Components
+// ================
+
+.card {
+  @include card-style();
+  @include theme-transition(all);
+  
+  // Card variants
+  &.card-elevated {
+    box-shadow: $shadow-md;
+    
+    &:hover {
+      box-shadow: $shadow-lg;
+      transform: translateY(-2px);
+    }
+  }
+  
+  &.card-outlined {
+    @include theme-border(var(--border-light), var(--border-dark));
+    border: 2px solid;
+    box-shadow: none;
+  }
+  
+  &.card-filled {
+    @include theme-background(var(--background-secondary-light), var(--background-secondary-dark));
+  }
+  
+  &.card-compact {
+    padding: $spacing-md;
+  }
+  
+  &.card-spacious {
+    padding: $spacing-xxl;
+  }
+}
+
+// Card header
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: $spacing-md;
+  margin-bottom: $spacing-md;
+  @include theme-border(var(--border-light), var(--border-dark));
+  border-bottom: 1px solid;
+  
+  .card-title {
+    font-size: $font-size-h2;
+    font-weight: $font-weight-medium;
+    @include theme-color(var(--text-primary-light), var(--text-primary-dark));
+    margin: 0;
+  }
+  
+  .card-subtitle {
+    font-size: $font-size-caption;
+    @include theme-color(var(--text-secondary-light), var(--text-secondary-dark));
+    margin: 0;
+    margin-top: $spacing-xs;
+  }
+  
+  .card-actions {
+    display: flex;
+    gap: $spacing-xs;
+  }
+}
+
+// Card content
+.card-content {
+  flex: 1;
+  
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Card footer
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: $spacing-md;
+  margin-top: $spacing-md;
+  @include theme-border(var(--border-light), var(--border-dark));
+  border-top: 1px solid;
+  
+  @include mobile {
+    flex-direction: column;
+    gap: $spacing-md;
+    align-items: stretch;
+  }
+}
+
+// Card media
+.card-media {
+  margin: (-$spacing-lg) (-$spacing-lg) $spacing-lg (-$spacing-lg);
+  border-radius: $border-radius-lg $border-radius-lg 0 0;
+  overflow: hidden;
+  
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+// Specialized card types
+.info-card {
+  @extend .card;
+  @include theme-background(var(--info-bg-light), var(--info-bg-dark));
+  @include theme-border(var(--info-light), var(--info-dark));
+  border-left: 4px solid;
+  
+  .card-icon {
+    @include theme-color(var(--info-light), var(--info-dark));
+  }
+}
+
+.success-card {
+  @extend .card;
+  @include theme-background(var(--success-bg-light), var(--success-bg-dark));
+  @include theme-border(var(--success-light), var(--success-dark));
+  border-left: 4px solid;
+  
+  .card-icon {
+    @include theme-color(var(--success-light), var(--success-dark));
+  }
+}
+
+.warning-card {
+  @extend .card;
+  @include theme-background(var(--warning-bg-light), var(--warning-bg-dark));
+  @include theme-border(var(--warning-light), var(--warning-dark));
+  border-left: 4px solid;
+  
+  .card-icon {
+    @include theme-color(var(--warning-light), var(--warning-dark));
+  }
+}
+
+.error-card {
+  @extend .card;
+  @include theme-background(var(--error-bg-light), var(--error-bg-dark));
+  @include theme-border(var(--error-light), var(--error-dark));
+  border-left: 4px solid;
+  
+  .card-icon {
+    @include theme-color(var(--error-light), var(--error-dark));
+  }
+}
+
+// CTF-specific card types
+.flag-card {
+  @extend .card;
+  position: relative;
+  
+  .flag-status {
+    position: absolute;
+    top: $spacing-sm;
+    right: $spacing-sm;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-caption;
+    font-weight: $font-weight-medium;
+    
+    &.status-submitted {
+      @include theme-background(var(--flag-submitted-light), var(--flag-submitted-dark));
+      color: white;
+    }
+    
+    &.status-accepted {
+      @include theme-background(var(--flag-light), var(--flag-dark));
+      color: white;
+    }
+    
+    &.status-rejected {
+      @include theme-background(var(--flag-rejected-light), var(--flag-rejected-dark));
+      color: white;
+    }
+    
+    &.status-pending {
+      @include theme-background(var(--flag-pending-light), var(--flag-pending-dark));
+      color: white;
+    }
+  }
+  
+  .flag-value {
+    font-family: $font-family-primary;
+    font-size: $font-size-code;
+    @include theme-background(var(--code-bg-light), var(--code-bg-dark));
+    @include theme-color(var(--code-text-light), var(--code-text-dark));
+    padding: $spacing-sm;
+    border-radius: $border-radius-sm;
+    margin: $spacing-md 0;
+    word-break: break-all;
+    
+    .copy-button {
+      float: right;
+      margin-left: $spacing-sm;
+    }
+  }
+}
+
+.team-card {
+  @extend .card;
+  
+  .team-status {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: $font-size-caption;
+    font-weight: $font-weight-medium;
+    
+    &::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    
+    &.team-friendly {
+      @include theme-color(var(--team-friendly-light), var(--team-friendly-dark));
+      
+      &::before {
+        background-color: var(--team-friendly-light);
+      }
+    }
+    
+    &.team-enemy {
+      @include theme-color(var(--team-enemy-light), var(--team-enemy-dark));
+      
+      &::before {
+        background-color: var(--team-enemy-light);
+      }
+    }
+    
+    &.team-neutral {
+      @include theme-color(var(--team-neutral-light), var(--team-neutral-dark));
+      
+      &::before {
+        background-color: var(--team-neutral-light);
+      }
+    }
+  }
+  
+  .team-address {
+    font-family: $font-family-primary;
+    @include theme-background(var(--code-bg-light), var(--code-bg-dark));
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $border-radius-sm;
+    margin-top: $spacing-sm;
+  }
+}
+
+// Card grid layout
+.card-grid {
+  display: grid;
+  gap: $spacing-lg;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
+  }
+}
+
+// Card list layout
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  
+  .card {
+    margin-bottom: 0;
+  }
+}

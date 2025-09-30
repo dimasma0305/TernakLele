@@ -1,0 +1,207 @@
+// Theme Mixins and Functions
+// ===========================
+
+// Media Query Mixins
+@mixin mobile {
+  @media (max-width: #{$breakpoint-sm - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: #{$breakpoint-sm}) and (max-width: #{$breakpoint-md - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$breakpoint-md}) {
+    @content;
+  }
+}
+
+@mixin mobile-and-tablet {
+  @media (max-width: #{$breakpoint-md - 1px}) {
+    @content;
+  }
+}
+
+// Theme-aware property mixin
+@mixin theme-property($property, $light-value, $dark-value) {
+  #{$property}: var(--#{$property}-light, #{$light-value});
+  
+  :root[data-theme='dark'] & {
+    #{$property}: var(--#{$property}-dark, #{$dark-value});
+  }
+}
+
+// Card component mixin
+@mixin card-style($padding: $spacing-lg) {
+  @include theme-property(background-color, var(--surface-light), var(--surface-dark));
+  @include theme-property(color, var(--text-primary-light), var(--text-primary-dark));
+  @include theme-property(border-color, var(--border-light), var(--border-dark));
+  
+  border: 1px solid;
+  border-radius: $border-radius-lg;
+  padding: $padding;
+  box-shadow: $shadow-sm;
+  transition: all $transition-normal $ease-in-out;
+  
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+}
+
+// Button style mixin
+@mixin button-style($variant: 'primary') {
+  border: none;
+  border-radius: $border-radius-md;
+  padding: $spacing-sm $spacing-lg;
+  font-family: $font-family-primary;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-body;
+  cursor: pointer;
+  transition: all $transition-fast $ease-out;
+  
+  &:focus {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  
+  @if $variant == 'primary' {
+    @include theme-property(background-color, var(--primary-light), var(--primary-dark));
+    @include theme-property(color, var(--primary-contrast-light), var(--primary-contrast-dark));
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: $shadow-md;
+    }
+  } @else if $variant == 'secondary' {
+    @include theme-property(background-color, transparent, transparent);
+    @include theme-property(color, var(--text-primary-light), var(--text-primary-dark));
+    @include theme-property(border-color, var(--border-light), var(--border-dark));
+    border: 1px solid;
+    
+    &:hover:not(:disabled) {
+      @include theme-property(background-color, var(--background-secondary-light), var(--background-secondary-dark));
+    }
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Input field style mixin
+@mixin input-style {
+  @include theme-property(background-color, var(--surface-light), var(--surface-dark));
+  @include theme-property(color, var(--text-primary-light), var(--text-primary-dark));
+  @include theme-property(border-color, var(--border-light), var(--border-dark));
+  
+  border: 1px solid;
+  border-radius: $border-radius-md;
+  padding: $spacing-sm $spacing-md;
+  font-family: $font-family-primary;
+  font-size: $font-size-body;
+  transition: all $transition-fast $ease-out;
+  
+  &:focus {
+    @include theme-property(border-color, var(--primary-light), var(--primary-dark));
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring);
+  }
+  
+  &::placeholder {
+    @include theme-property(color, var(--text-secondary-light), var(--text-secondary-dark));
+  }
+}
+
+// Table style mixin
+@mixin table-style {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: $font-family-primary;
+  
+  th, td {
+    padding: $spacing-sm $spacing-md;
+    text-align: left;
+    @include theme-property(border-bottom-color, var(--border-light), var(--border-dark));
+    border-bottom: 1px solid;
+  }
+  
+  th {
+    @include theme-property(background-color, var(--background-secondary-light), var(--background-secondary-dark));
+    @include theme-property(color, var(--text-primary-light), var(--text-primary-dark));
+    font-weight: $font-weight-medium;
+    font-size: $font-size-caption;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  tbody tr {
+    @include theme-property(background-color, var(--surface-light), var(--surface-dark));
+    transition: background-color $transition-fast $ease-out;
+    
+    &:hover {
+      @include theme-property(background-color, var(--background-secondary-light), var(--background-secondary-dark));
+    }
+    
+    &:nth-child(even) {
+      @include theme-property(background-color, var(--background-secondary-light), var(--background-secondary-dark));
+      
+      &:hover {
+        @include theme-property(background-color, var(--border-light), var(--border-dark));
+      }
+    }
+  }
+}
+
+// Animation keyframes
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+// Utility mixins
+@mixin visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+@mixin clearfix {
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

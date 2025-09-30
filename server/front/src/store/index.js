@@ -6,7 +6,7 @@ import { createStore } from "vuex";
 import createPersistedState from "vuex-persistedstate";
 
 export default createStore({
-  plugins: [createPersistedState({ paths: ["serverPassword"] })],
+  plugins: [createPersistedState({ paths: ["serverPassword", "ui"] })],
   state: {
     totalFlags: 0,
     selectedPage: 1,
@@ -24,6 +24,14 @@ export default createStore({
     teams: [],
 
     serverPassword: null,
+
+    // UI and Theme Management
+    ui: {
+      theme: 'auto', // 'light', 'dark', 'auto'
+      systemTheme: 'light',
+      userPreference: null,
+      themeTransition: false,
+    },
   },
   mutations: {
     setTotalFlags(state, totalFlags) {
@@ -57,6 +65,20 @@ export default createStore({
 
     setServerPassword(state, password) {
       state.serverPassword = password;
+    },
+
+    // Theme Management Mutations
+    setTheme(state, theme) {
+      state.ui.theme = theme;
+    },
+    setSystemTheme(state, systemTheme) {
+      state.ui.systemTheme = systemTheme;
+    },
+    setUserPreference(state, preference) {
+      state.ui.userPreference = preference;
+    },
+    setThemeTransition(state, transitioning) {
+      state.ui.themeTransition = transitioning;
     },
   },
   actions: {
@@ -106,6 +128,89 @@ export default createStore({
       } catch (e) {
         console.error("Error fetching teams", e);
       }
+    },
+
+    // Theme Management Actions
+    initializeTheme: function (context) {
+      // Detect system preference
+      const systemPreference = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      context.commit('setSystemTheme', systemPreference);
+      
+      // Set initial theme based on user preference or system
+      const currentTheme = context.state.ui.userPreference || context.state.ui.theme;
+      if (currentTheme === 'auto') {
+        context.dispatch('applyTheme', systemPreference);
+      } else {
+        context.dispatch('applyTheme', currentTheme);
+      }
+      
+      // Listen for system theme changes
+      if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+          const newSystemTheme = e.matches ? 'dark' : 'light';
+          context.commit('setSystemTheme', newSystemTheme);
+          if (context.state.ui.theme === 'auto') {
+            context.dispatch('applyTheme', newSystemTheme);
+          }
+        });
+      }
+    },
+
+    toggleTheme: function (context) {
+      const currentTheme = context.getters.currentActiveTheme;
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      context.commit('setUserPreference', newTheme);
+      context.commit('setTheme', newTheme);
+      context.dispatch('applyTheme', newTheme);
+    },
+
+    setThemeMode: function (context, mode) {
+      context.commit('setTheme', mode);
+      context.commit('setUserPreference', mode);
+      
+      if (mode === 'auto') {
+        context.dispatch('applyTheme', context.state.ui.systemTheme);
+      } else {
+        context.dispatch('applyTheme', mode);
+      }
+    },
+
+    applyTheme: function (context, theme) {
+      context.commit('setThemeTransition', true);
+      
+      // Apply theme to document
+      document.documentElement.setAttribute('data-theme', theme);
+      document.body.classList.remove('body--light', 'body--dark');
+      document.body.classList.add(`body--${theme}`);
+      
+      // Apply Quasar dark mode
+      if (typeof window !== 'undefined' && window.Quasar) {
+        window.Quasar.dark.set(theme === 'dark');
+      }
+      
+      setTimeout(() => {
+        context.commit('setThemeTransition', false);
+      }, 200);
+    },
+
+    resetThemePreferences: function (context) {
+      context.commit('setUserPreference', null);
+      context.commit('setTheme', 'auto');
+      context.dispatch('applyTheme', context.state.ui.systemTheme);
+    },
+  },
+  getters: {
+    currentActiveTheme: (state) => {
+      if (state.ui.theme === 'auto') {
+        return state.ui.systemTheme;
+      }
+      return state.ui.theme;
+    },
+    isDarkMode: (state, getters) => {
+      return getters.currentActiveTheme === 'dark';
+    },
+    isLightMode: (state, getters) => {
+      return getters.currentActiveTheme === 'light';
     },
   },
   modules: {},

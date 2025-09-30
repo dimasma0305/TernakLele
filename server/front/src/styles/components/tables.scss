@@ -1,0 +1,288 @@
+// Table Components
+// =================
+
+.table {
+  @include table-style();
+  @include theme-background(var(--surface-light), var(--surface-dark));
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  
+  // Table variants
+  &.table-bordered {
+    th, td {
+      @include theme-border(var(--border-light), var(--border-dark));
+      border: 1px solid;
+    }
+  }
+  
+  &.table-striped {
+    tbody tr:nth-child(even) {
+      @include theme-background(var(--background-secondary-light), var(--background-secondary-dark));
+    }
+  }
+  
+  &.table-hover {
+    tbody tr {
+      @include theme-transition(background-color);
+      
+      &:hover {
+        @include theme-background(var(--hover-light), var(--hover-dark));
+      }
+    }
+  }
+  
+  &.table-compact {
+    th, td {
+      padding: $spacing-xs $spacing-sm;
+    }
+  }
+  
+  &.table-spacious {
+    th, td {
+      padding: $spacing-md $spacing-lg;
+    }
+  }
+}
+
+// Table header
+.table-header {
+  @include theme-background(var(--background-secondary-light), var(--background-secondary-dark));
+  
+  th {
+    font-weight: $font-weight-medium;
+    font-size: $font-size-caption;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    @include theme-color(var(--text-primary-light), var(--text-primary-dark));
+    
+    // Sortable columns
+    &.sortable {
+      cursor: pointer;
+      position: relative;
+      @include theme-transition(background-color);
+      
+      &:hover {
+        @include theme-background(var(--hover-light), var(--hover-dark));
+      }
+      
+      &::after {
+        content: '↕';
+        position: absolute;
+        right: $spacing-sm;
+        @include theme-color(var(--text-secondary-light), var(--text-secondary-dark));
+        font-size: 0.8em;
+      }
+      
+      &.sort-asc::after {
+        content: '↑';
+        @include theme-color(var(--primary-light), var(--primary-dark));
+      }
+      
+      &.sort-desc::after {
+        content: '↓';
+        @include theme-color(var(--primary-light), var(--primary-dark));
+      }
+    }
+  }
+}
+
+// Table cells
+.table-cell {
+  // Cell alignment
+  &.cell-left { text-align: left; }
+  &.cell-center { text-align: center; }
+  &.cell-right { text-align: right; }
+  
+  // Cell types
+  &.cell-numeric {
+    font-family: $font-family-primary;
+    text-align: right;
+  }
+  
+  &.cell-code {
+    font-family: $font-family-primary;
+    font-size: $font-size-code;
+    @include theme-background(var(--code-bg-light), var(--code-bg-dark));
+    padding: $spacing-xs;
+    border-radius: $border-radius-sm;
+  }
+  
+  &.cell-status {
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: $spacing-xs;
+      padding: $spacing-xs $spacing-sm;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-caption;
+      font-weight: $font-weight-medium;
+      
+      &.status-success {
+        @include theme-background(var(--success-bg-light), var(--success-bg-dark));
+        @include theme-color(var(--success-light), var(--success-dark));
+      }
+      
+      &.status-error {
+        @include theme-background(var(--error-bg-light), var(--error-bg-dark));
+        @include theme-color(var(--error-light), var(--error-dark));
+      }
+      
+      &.status-warning {
+        @include theme-background(var(--warning-bg-light), var(--warning-bg-dark));
+        @include theme-color(var(--warning-light), var(--warning-dark));
+      }
+      
+      &.status-info {
+        @include theme-background(var(--info-bg-light), var(--info-bg-dark));
+        @include theme-color(var(--info-light), var(--info-dark));
+      }
+      
+      &::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: currentColor;
+      }
+    }
+  }
+  
+  &.cell-actions {
+    .action-buttons {
+      display: flex;
+      gap: $spacing-xs;
+      justify-content: center;
+      
+      .btn {
+        padding: $spacing-xs;
+        min-width: auto;
+      }
+    }
+  }
+}
+
+// Table footer
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md;
+  @include theme-background(var(--background-secondary-light), var(--background-secondary-dark));
+  @include theme-border(var(--border-light), var(--border-dark));
+  border-top: 1px solid;
+  
+  @include mobile {
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+}
+
+// Table pagination
+.table-pagination {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  
+  .pagination-info {
+    font-size: $font-size-caption;
+    @include theme-color(var(--text-secondary-light), var(--text-secondary-dark));
+  }
+  
+  .pagination-controls {
+    display: flex;
+    gap: $spacing-xs;
+  }
+  
+  .page-btn {
+    @extend .btn;
+    @extend .btn-secondary;
+    padding: $spacing-xs $spacing-sm;
+    min-width: 32px;
+    height: 32px;
+    font-size: $font-size-caption;
+    
+    &.active {
+      @include theme-background(var(--primary-light), var(--primary-dark));
+      @include theme-color(var(--primary-contrast-light), var(--primary-contrast-dark));
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Responsive table
+.table-responsive {
+  overflow-x: auto;
+  
+  @include mobile {
+    .table {
+      min-width: 600px;
+    }
+  }
+}
+
+// Table with loading state
+.table-loading {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    @include theme-background(rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.8));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+    border: 3px solid transparent;
+    border-top: 3px solid var(--primary-light);
+    border-radius: 50%;
+    animation: table-spin 1s linear infinite;
+    z-index: 1;
+  }
+}
+
+// Empty state
+.table-empty {
+  text-align: center;
+  padding: $spacing-xxl;
+  @include theme-color(var(--text-secondary-light), var(--text-secondary-dark));
+  
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: $spacing-md;
+    opacity: 0.5;
+  }
+  
+  .empty-title {
+    font-size: $font-size-h2;
+    font-weight: $font-weight-medium;
+    margin-bottom: $spacing-sm;
+  }
+  
+  .empty-description {
+    font-size: $font-size-body;
+    margin-bottom: $spacing-lg;
+  }
+}
+
+@keyframes table-spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
