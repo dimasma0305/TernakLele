@@ -20,20 +20,12 @@ CONFIG = {
     'SYSTEM_PROTOCOL': 'ailurus',
     'SYSTEM_URL': 'https://api.ctf-compfest.com',
     'TEAM_TOKEN': 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1OTAyNDg0MiwianRpIjoiM2U1MmM2ZTAtYzEwYS00OTJhLWFkYTItMTRlODlhMzAwNDBjIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ0ZWFtIjp7ImlkIjo4LCJuYW1lIjoiYXBhIHlhIGthPyJ9fSwibmJmIjoxNzU5MDI0ODQyLCJleHAiOjE3NTkwNjgwNDJ9.N35Yg08RPProq_5CKFTbcDbzLhgq-sk0VCXYhZhTQAM5OuuLADHIXoj_w19GI1emxhD7udCNLGyiXv82zFyfbw',
-
     # 'SYSTEM_HOST': '10.10.10.10',
     # 'SYSTEM_PORT': '31337',
     # 'SYSTEM_PROTOCOL': 'volgactf',
     # 'SYSTEM_VALIDATOR': 'volgactf',
     # 'SYSTEM_HOST': 'final.volgactf.ru',
     # 'SYSTEM_SERVER_KEY': validators.volgactf.get_public_key('https://final.volgactf.ru'),
-
-    # this is for run.py
-    'SOLVER_TIMEOUT': 120,
-    'SUBMIT_GRACE_SECONDS': 1,
-    'RUN_INTERVAL': 30,
-    'WATCH_POLL': 2,
-    'USE_THREADING': False,  # Set to False to run solvers synchronously (no threading)
 
     # The server will submit not more than SUBMIT_FLAG_LIMIT flags
     # every SUBMIT_PERIOD seconds. Flags received more than
@@ -42,6 +34,14 @@ CONFIG = {
     'SUBMIT_PERIOD': 2,
     'FLAG_LIFETIME': 10 * 60,
     # 'FLAG_LIFETIME': 5 * 60,
+
+
+    # Config for run.py
+    'SOLVER_TIMEOUT': 120,
+    'SUBMIT_GRACE_SECONDS': 1,
+    'RUN_INTERVAL': 30,
+    'WATCH_POLL': 2,
+    'USE_THREADING': False,  # Set to False to run solvers synchronously (no threading)
 
     # VOLGA: Don't make more than INFO_FLAG_LIMIT requests to get flag info,
     # usually should be more than SUBMIT_FLAG_LIMIT
