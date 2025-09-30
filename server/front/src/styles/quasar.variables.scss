@@ -1,13 +1,29 @@
-// It's highly recommended to change the default colors
-// to match your app's branding.
+// Professional color palette with modern, accessible colors
+$primary: #4f46e5;    // Deep Indigo - Primary brand color
+$secondary: #0ea5e9;  // Sky Blue - Secondary actions
+$accent: #8b5cf6;     // Vibrant Purple - Accent elements
 
-$primary: #027BE3;
-$secondary: #26A69A;
-$accent: #9C27B0;
+// Dark theme colors - Refined for better contrast
+$dark: #0f172a;       // Slate 900
+$dark-page: #1e293b;  // Slate 800
 
-$dark: #1D1D1D;
+// Status colors - Enhanced for better visibility
+$positive: #10b981;   // Emerald - Success states
+$negative: #ef4444;   // Red - Error states
+$info: #3b82f6;       // Blue - Information states
+$warning: #f59e0b;    // Amber - Warning states
 
-$positive: #21BA45;
-$negative: #C10015;
-$info: #31CCEC;
-$warning: #F2C037;
+// Custom colors for enhanced UI
+$card-dark: #1e293b;  // Slate 800
+$card-light: #ffffff;
+$text-dark: #f8fafc;  // Slate 50
+$text-light: #0f172a; // Slate 900
+$border-dark: #334155; // Slate 700
+$border-light: #e2e8f0; // Slate 200
+$hover-dark: #334155;  // Slate 700
+$hover-light: #f1f5f9; // Slate 100
+
+// Additional UI enhancement colors
+$muted-light: #94a3b8; // Slate 400 - Subtle text
+$muted-dark: #cbd5e1;  // Slate 300 - Subtle text in dark mode
+$focus-ring: rgba(79, 70, 229, 0.4); // Focus state highlight

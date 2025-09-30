@@ -6,6 +6,7 @@ import store from "@/store";
 import { Quasar } from "quasar";
 import "quasar/dist/quasar.sass";
 import { createApp } from "vue";
+import "@/assets/global.scss";
 
 const app = createApp(App);
 

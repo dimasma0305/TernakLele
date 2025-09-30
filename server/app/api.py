@@ -1,5 +1,7 @@
 import importlib
 import time
+import hashlib
+import json
 from collections import defaultdict
 from datetime import datetime
 
@@ -244,3 +246,103 @@ def get_teams():
         teams.items(),
     ))
     return jsonify(response)
+
+
+@api.route('/chart-data', methods=['GET'])
+@auth.auth_required
+def get_chart_data():
+    """
+    RESTful endpoint for fetching chart data showing flag status breakdown by team.
+    Returns all flag data without time filtering.
+    """
+    
+    with db_cursor(True) as (_, curs):
+        # Get flag counts by team and status
+        curs.execute("""
+            SELECT team, status, COUNT(*) as count 
+            FROM flags 
+            GROUP BY team, status
+            ORDER BY team, status
+        """)
+        
+        results = curs.fetchall()
+        
+        # Organize data by team
+        team_data = {}
+        status_types = set()
+        
+        for row in results:
+            team = row['team']
+            status = row['status']
+            count = row['count']
+            
+            if team not in team_data:
+                team_data[team] = {}
+            
+            team_data[team][status] = count
+            status_types.add(status)
+        
+        # Convert to chart format
+        teams = list(team_data.keys())
+        status_list = sorted(list(status_types))
+        
+        # Define colors for different statuses
+        status_colors = {
+            'ACCEPTED': '#4CAF50',    # Green
+            'REJECTED': '#F44336',    # Red
+            'QUEUED': '#FF9800',      # Orange
+            'SKIPPED': '#9E9E9E'      # Grey
+        }
+        
+        # Create series data for stacked bar chart
+        series = []
+        for status in status_list:
+            data = []
+            for team in teams:
+                data.append(team_data[team].get(status, 0))
+            
+            series.append({
+                'name': status.title(),
+                'data': data,
+                'color': status_colors.get(status, '#2196F3')  # Default blue
+            })
+        
+        return jsonify({
+            'type': 'bar',
+            'title': 'Flag Status by Team',
+            'xAxis': teams,
+            'series': series
+        })
+
+
+@api.route('/content-hash', methods=['GET'])
+@auth.auth_required
+def get_content_hash():
+    """
+    Get content hashes for flags and chart data to enable auto-refresh functionality.
+    Returns MD5 hashes of the current data state.
+    """
+    
+    with db_cursor(True) as (_, curs):
+        # Get hash for flags data
+        curs.execute("SELECT COUNT(*), MAX(time) FROM flags")
+        flags_meta = curs.fetchone()
+        flags_hash_data = f"{flags_meta['count']}_{flags_meta['max'] or 0}"
+        flags_hash = hashlib.md5(flags_hash_data.encode()).hexdigest()
+        
+        # Get hash for chart data (team status counts)
+        curs.execute("""
+            SELECT team, status, COUNT(*) as count 
+            FROM flags 
+            GROUP BY team, status
+            ORDER BY team, status
+        """)
+        chart_results = curs.fetchall()
+        chart_hash_data = json.dumps([dict(row) for row in chart_results], sort_keys=True)
+        chart_hash = hashlib.md5(chart_hash_data.encode()).hexdigest()
+        
+        return jsonify({
+            'flags_hash': flags_hash,
+            'chart_hash': chart_hash,
+            'timestamp': int(time.time())
+        })
