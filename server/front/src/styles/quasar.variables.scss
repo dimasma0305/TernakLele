@@ -1,13 +1,18 @@
-// It's highly recommended to change the default colors
-// to match your app's branding.
+// Quasar Theme Variables
+// Updated to match our design system colors
 
-$primary: #027BE3;
-$secondary: #26A69A;
-$accent: #9C27B0;
+$primary: #3F51B5;   // Indigo - matches our primary color
+$secondary: #4CAF50; // Green - matches our secondary color  
+$accent: #FFC107;    // Amber - matches our accent color
 
-$dark: #1D1D1D;
+$dark: #121212;      // Deep dark for backgrounds
 
-$positive: #21BA45;
-$negative: #C10015;
-$info: #31CCEC;
-$warning: #F2C037;
+$positive: #4CAF50;  // Green for success states
+$negative: #F44336;  // Red for error states
+$info: #2196F3;      // Blue for info states
+$warning: #FF9800;   // Orange for warning states
+
+// Dark mode text color override
+$dark-page: #121212;
+$separator-dark-color: #404040;
+$text-dark-color: #FFFFFF;

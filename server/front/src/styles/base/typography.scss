@@ -17,8 +17,8 @@ body {
   font-family: $font-family-primary;
   font-weight: $font-weight-regular;
   line-height: $line-height-body;
-  @include theme-color(var(--text-primary-light), var(--text-primary-dark));
-  @include theme-transition(color);
+  color: var(--text-primary);
+  transition: color 200ms ease-in-out;
 }
 
 // Heading styles
@@ -27,7 +27,7 @@ h1, .text-h1 {
   font-weight: $font-weight-bold;
   line-height: $line-height-display;
   margin-bottom: $spacing-lg;
-  @include theme-color(var(--text-primary-light), var(--text-primary-dark));
+  color: var(--text-primary);
   
   @include mobile {
     font-size: $font-size-h1;
@@ -40,7 +40,7 @@ h2, .text-h2 {
   font-weight: $font-weight-bold;
   line-height: $line-height-h1;
   margin-bottom: $spacing-md;
-  @include theme-color(var(--text-primary-light), var(--text-primary-dark));
+  color: var(--text-primary);
   
   @include mobile {
     font-size: $font-size-h2;
@@ -53,7 +53,7 @@ h3, .text-h3 {
   font-weight: $font-weight-medium;
   line-height: $line-height-h2;
   margin-bottom: $spacing-md;
-  @include theme-color(var(--text-primary-light), var(--text-primary-dark));
+  color: var(--text-primary);
 }
 
 h4, .text-h4 {
@@ -61,7 +61,7 @@ h4, .text-h4 {
   font-weight: $font-weight-medium;
   line-height: $line-height-body;
   margin-bottom: $spacing-sm;
-  @include theme-color(var(--text-primary-light), var(--text-primary-dark));
+  color: var(--text-primary);
 }
 
 h5, .text-h5 {
@@ -69,7 +69,7 @@ h5, .text-h5 {
   font-weight: $font-weight-medium;
   line-height: $line-height-caption;
   margin-bottom: $spacing-sm;
-  @include theme-color(var(--text-secondary-light), var(--text-secondary-dark));
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -79,7 +79,7 @@ h6, .text-h6 {
   font-weight: $font-weight-regular;
   line-height: $line-height-caption;
   margin-bottom: $spacing-sm;
-  @include theme-color(var(--text-secondary-light), var(--text-secondary-dark));
+  color: var(--text-secondary);
 }
 
 // Paragraph styles
@@ -87,7 +87,7 @@ p, .text-body {
   font-size: $font-size-body;
   line-height: $line-height-body;
   margin-bottom: $spacing-md;
-  @include theme-color(var(--text-primary-light), var(--text-primary-dark));
+  color: var(--text-primary);
   
   &:last-child {
     margin-bottom: 0;
@@ -96,23 +96,23 @@ p, .text-body {
 
 // Text utilities
 .text-primary {
-  @include theme-color(var(--text-primary-light), var(--text-primary-dark));
+  color: var(--text-primary);
 }
 
 .text-secondary {
-  @include theme-color(var(--text-secondary-light), var(--text-secondary-dark));
+  color: var(--text-secondary);
 }
 
 .text-tertiary {
-  @include theme-color(var(--text-tertiary-light), var(--text-tertiary-dark));
+  color: var(--text-tertiary);
 }
 
 .text-disabled {
-  @include theme-color(var(--text-disabled-light), var(--text-disabled-dark));
+  color: var(--text-disabled);
 }
 
 .text-inverse {
-  @include theme-color(var(--text-inverse-light), var(--text-inverse-dark));
+  color: var(--text-inverse);
 }
 
 // Text sizes
@@ -199,34 +199,28 @@ p, .text-body {
   font-family: $font-family-primary;
   font-size: $font-size-code;
   line-height: $line-height-code;
-  @include theme-background(var(--code-bg-light), var(--code-bg-dark));
-  @include theme-color(var(--code-text-light), var(--code-text-dark));
+  background: var(--code-bg);
+  color: var(--code-text);
   padding: $spacing-xs $spacing-sm;
   border-radius: $border-radius-sm;
-  @include theme-border(var(--code-border-light), var(--code-border-dark));
-  border: 1px solid;
+  border: 1px solid var(--code-border);
 }
 
 // Link styles
 a, .link {
-  @include theme-color(var(--primary-light), var(--primary-dark));
+  color: var(--primary);
   text-decoration: none;
-  @include theme-transition(color);
+  transition: color 200ms ease-in-out;
   
   &:hover {
-    @include theme-color(var(--primary-hover-light), var(--primary-hover-dark));
+    color: var(--primary-hover);
     text-decoration: underline;
   }
   
   &:focus {
-    outline: 2px solid var(--focus-ring-light);
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
   }
-}
-
-:root[data-theme='dark'] a:focus,
-:root[data-theme='dark'] .link:focus {
-  outline-color: var(--focus-ring-dark);
 }
 
 // List styles
@@ -236,17 +230,16 @@ ul, ol {
   
   li {
     margin-bottom: $spacing-xs;
-    @include theme-color(var(--text-primary-light), var(--text-primary-dark));
+    color: var(--text-primary);
   }
 }
 
 // Blockquote styles
 blockquote {
-  @include theme-background(var(--background-secondary-light), var(--background-secondary-dark));
-  @include theme-border(var(--border-light), var(--border-dark));
-  border-left: 4px solid;
+  background: var(--background-secondary);
+  border-left: 4px solid var(--border);
   padding: $spacing-md;
   margin: $spacing-lg 0;
   font-style: italic;
-  @include theme-color(var(--text-secondary-light), var(--text-secondary-dark));
+  color: var(--text-secondary);
 }

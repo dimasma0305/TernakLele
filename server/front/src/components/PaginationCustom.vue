@@ -72,9 +72,29 @@ export default {
 <style lang="scss" scoped>
 .pagination {
   font-size: 0.9em;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 
   > .message {
     margin-right: 1em;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  
+  // Ensure buttons inherit proper theming
+  :deep(.q-btn) {
+    color: var(--text-secondary);
+    
+    &:hover {
+      background: var(--hover);
+      color: var(--text-primary);
+    }
+    
+    &:disabled {
+      color: var(--text-disabled);
+    }
   }
 }
 </style>

@@ -28,18 +28,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  @include theme-transition();
-}
-
-// Theme-aware body classes
-body.body--light {
-  @include theme-background(var(--background-primary-light), var(--background-primary-light));
-  @include theme-color(var(--text-primary-light), var(--text-primary-light));
-}
-
-body.body--dark {
-  @include theme-background(var(--background-primary-dark), var(--background-primary-dark));
-  @include theme-color(var(--text-primary-dark), var(--text-primary-dark));
+  background: var(--background-primary);
+  color: var(--text-primary);
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 
 // Remove default margins
@@ -123,13 +114,8 @@ input, textarea, select {
 
 // Selection styles
 ::selection {
-  background-color: var(--primary-light);
-  color: var(--primary-contrast-light);
-}
-
-:root[data-theme='dark'] ::selection {
-  background-color: var(--primary-dark);
-  color: var(--primary-contrast-dark);
+  background-color: var(--primary);
+  color: var(--primary-contrast);
 }
 
 // Scrollbar styling
@@ -139,15 +125,15 @@ input, textarea, select {
 }
 
 ::-webkit-scrollbar-track {
-  @include theme-background(var(--background-secondary-light), var(--background-secondary-dark));
+  background: var(--background-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
-  @include theme-background(var(--border-light), var(--border-dark));
+  background: var(--border);
   border-radius: 4px;
   
   &:hover {
-    @include theme-background(var(--border-hover-light), var(--border-hover-dark));
+    background: var(--border-hover);
   }
 }
 

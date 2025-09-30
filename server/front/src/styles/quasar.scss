@@ -21,4 +21,86 @@
 
 // Import Quasar variables
 @import './quasar.variables.scss';
-// @import '~quasar-addon-styl';
+
+// Quasar Component Overrides for Dark Mode
+// ========================================
+:root[data-theme='dark'] {
+  // Override Quasar's default text colors in dark mode
+  .q-card {
+    background: var(--surface) !important;
+    color: var(--text-primary) !important;
+  }
+  
+  .q-item {
+    color: var(--text-primary) !important;
+  }
+  
+  .q-input {
+    color: var(--text-primary) !important;
+    
+    .q-field__label {
+      color: var(--text-secondary) !important;
+    }
+    
+    .q-field__control {
+      color: var(--text-primary) !important;
+    }
+  }
+  
+  .q-btn {
+    &.text-primary {
+      color: var(--text-primary) !important;
+    }
+    
+    &.text-secondary {
+      color: var(--text-secondary) !important;
+    }
+  }
+  
+  .q-table {
+    color: var(--text-primary) !important;
+    
+    .q-table__title {
+      color: var(--text-primary) !important;
+    }
+    
+    .q-table__top {
+      color: var(--text-primary) !important;
+    }
+    
+    td, th {
+      color: var(--text-primary) !important;
+    }
+  }
+  
+  .q-pagination {
+    .q-btn {
+      color: var(--text-secondary) !important;
+      
+      &.q-btn--active {
+        color: var(--primary-contrast) !important;
+      }
+    }
+  }
+  
+  .text-h1, .text-h2, .text-h3, .text-h4, .text-h5, .text-h6 {
+    color: var(--text-primary) !important;
+  }
+  
+  .text-body1, .text-body2, .text-caption {
+    color: var(--text-primary) !important;
+  }
+  
+  // Ensure labels and form elements are visible
+  label {
+    color: var(--text-secondary) !important;
+  }
+  
+  .q-field__label {
+    color: var(--text-secondary) !important;
+  }
+  
+  .q-field__messages {
+    color: var(--text-tertiary) !important;
+  }
+}
