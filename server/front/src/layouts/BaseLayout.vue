@@ -58,7 +58,7 @@
       <q-toolbar class="q-px-lg">
         <div class="text-caption">Ternak Lele © {{ new Date().getFullYear() }}</div>
         <q-space />
-        <div class="text-caption">Modern UI by AI Assistant</div>
+        <div class="text-caption">@dimasc.tf</div>
       </q-toolbar>
     </q-footer>
   </q-layout>
