@@ -58,7 +58,7 @@
     @include theme-border(var(--error-light), var(--error-dark));
     
     &:focus {
-      box-shadow: 0 0 0 3px alpha-color(var(--error-light), 0.2);
+      box-shadow: 0 0 0 3px var(--error-focus-ring, rgba(244, 67, 54, 0.2));
     }
   }
   
@@ -66,7 +66,7 @@
     @include theme-border(var(--success-light), var(--success-dark));
     
     &:focus {
-      box-shadow: 0 0 0 3px alpha-color(var(--success-light), 0.2);
+      box-shadow: 0 0 0 3px var(--success-focus-ring, rgba(0, 200, 81, 0.2));
     }
   }
   
@@ -74,7 +74,7 @@
     @include theme-border(var(--warning-light), var(--warning-dark));
     
     &:focus {
-      box-shadow: 0 0 0 3px alpha-color(var(--warning-light), 0.2);
+      box-shadow: 0 0 0 3px var(--warning-focus-ring, rgba(255, 143, 0, 0.2));
     }
   }
 }

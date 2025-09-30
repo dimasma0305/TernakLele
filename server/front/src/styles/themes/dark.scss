@@ -39,12 +39,16 @@
   
   // State Colors
   --success-dark: #4CAF50;
+  --success-hover-dark: #66BB6A;
   --success-bg-dark: #1B5E20;
   --warning-dark: #FFC107;
+  --warning-hover-dark: #FFCA28;
   --warning-bg-dark: #E65100;
   --error-dark: #F44336;
+  --error-hover-dark: #EF5350;
   --error-bg-dark: #B71C1C;
   --info-dark: #2196F3;
+  --info-hover-dark: #42A5F5;
   --info-bg-dark: #0D47A1;
   
   // Interactive States
@@ -52,6 +56,11 @@
   --active-dark: rgba(255, 255, 255, 0.12);
   --focus-ring-dark: rgba(63, 81, 181, 0.4);
   --selected-dark: rgba(63, 81, 181, 0.16);
+  
+  // Focus rings for form states
+  --error-focus-ring: rgba(244, 67, 54, 0.4);
+  --success-focus-ring: rgba(76, 175, 80, 0.4);
+  --warning-focus-ring: rgba(255, 193, 7, 0.4);
   
   // Shadows
   --shadow-sm-dark: 0 1px 2px 0 rgba(0, 0, 0, 0.3);

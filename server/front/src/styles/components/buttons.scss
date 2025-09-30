@@ -62,7 +62,8 @@
     color: white;
     
     &:hover:not(:disabled) {
-      @include theme-background(darken(var(--success-light), 10%), lighten(var(--success-dark), 10%));
+      @include theme-background(var(--success-hover-light, var(--success-light)), var(--success-hover-dark, var(--success-dark)));
+      filter: brightness(1.1);
     }
   }
   
@@ -71,7 +72,8 @@
     color: white;
     
     &:hover:not(:disabled) {
-      @include theme-background(darken(var(--warning-light), 10%), lighten(var(--warning-dark), 10%));
+      @include theme-background(var(--warning-hover-light, var(--warning-light)), var(--warning-hover-dark, var(--warning-dark)));
+      filter: brightness(1.1);
     }
   }
   
@@ -80,7 +82,8 @@
     color: white;
     
     &:hover:not(:disabled) {
-      @include theme-background(darken(var(--error-light), 10%), lighten(var(--error-dark), 10%));
+      @include theme-background(var(--error-hover-light, var(--error-light)), var(--error-hover-dark, var(--error-dark)));
+      filter: brightness(1.1);
     }
   }
   

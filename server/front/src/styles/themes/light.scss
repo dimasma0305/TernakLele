@@ -39,12 +39,16 @@
   
   // State Colors
   --success-light: #00C851;
+  --success-hover-light: #00A041;
   --success-bg-light: #E8F5E8;
   --warning-light: #FF8F00;
+  --warning-hover-light: #FF6F00;
   --warning-bg-light: #FFF3E0;
   --error-light: #F44336;
+  --error-hover-light: #D32F2F;
   --error-bg-light: #FFEBEE;
   --info-light: #2196F3;
+  --info-hover-light: #1976D2;
   --info-bg-light: #E3F2FD;
   
   // Interactive States
@@ -52,6 +56,11 @@
   --active-light: rgba(0, 0, 0, 0.08);
   --focus-ring-light: rgba(26, 35, 126, 0.2);
   --selected-light: rgba(26, 35, 126, 0.08);
+  
+  // Focus rings for form states
+  --error-focus-ring: rgba(244, 67, 54, 0.2);
+  --success-focus-ring: rgba(0, 200, 81, 0.2);
+  --warning-focus-ring: rgba(255, 143, 0, 0.2);
   
   // Shadows
   --shadow-sm-light: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
