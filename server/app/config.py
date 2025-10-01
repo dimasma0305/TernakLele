@@ -36,12 +36,23 @@ CONFIG = {
     # 'FLAG_LIFETIME': 5 * 60,
 
 
-    # Config for run.py
-    'SOLVER_TIMEOUT': 120,
-    'SUBMIT_GRACE_SECONDS': 1,
+    # Configuration keys (in CONFIG) that are used/added:
+    #  - RUN_INTERVAL (seconds, default 30)
+    #  - WATCH_POLL (seconds, default 2)
+    #  - SOLVER_TIMEOUT (seconds, default 60)
+    #  - SUBMIT_FLAG_LIMIT (int) - forwarded to get_fair_share
+    #  - USE_THREADING (bool) - when True each solver will run attacks against teams concurrently; when False each solver will run teams sequentially
+    #  - SOLVER_RETRIES (int, default 1) - retries for failed solver runs
+    #  - SOLVER_THREADS_PER_SOLVER (int) - max workers per solver executor
+    #  - MAX_CONCURRENT_ATTACKS (int, default 50) - global limit on concurrent attacks
     'RUN_INTERVAL': 30,
     'WATCH_POLL': 2,
-    'USE_THREADING': False,  # Set to False to run solvers synchronously (no threading)
+    'SOLVER_TIMEOUT': 60,
+    'SUBMIT_FLAG_LIMIT': 100,
+    'USE_THREADING': True,
+    'SOLVER_RETRIES': 1,
+    'SOLVER_THREADS_PER_SOLVER': 2,
+    'MAX_CONCURRENT_ATTACKS': 50,
 
     # VOLGA: Don't make more than INFO_FLAG_LIMIT requests to get flag info,
     # usually should be more than SUBMIT_FLAG_LIMIT
