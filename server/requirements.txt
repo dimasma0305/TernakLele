@@ -17,7 +17,7 @@ gevent==21.12.0
 greenlet==1.1.0
 grequests==0.6.0
 gunicorn==21.2.0
-hiredis==2.0.0
+sqlalchemy==1.4.53
 idna==2.10
 importlib-metadata==4.13.0
 itsdangerous==2.1.2
@@ -28,12 +28,10 @@ packaging==23.1
 prometheus-client==0.17.1
 prometheus-flask-exporter==0.22.4
 prompt-toolkit==3.0.20
-psycopg2-binary==2.9.6
 pycparser==2.20
 PyJWT==2.1.0
 python-dateutil==2.8.2
 pytz==2021.1
-redis==3.5.3
 requests==2.31.0
 rmtest==0.7.0
 six==1.16.0

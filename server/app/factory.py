@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 
 from celery import Celery
 from flask import Flask
@@ -35,12 +36,35 @@ def create_app():
 
 
 def create_celery():
-    broker = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/0')
+    # Ensure the data directory exists
+    data_dir = Path('/app/data')
+    data_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Ensure the celery directory exists
+    celery_dir = data_dir / 'celery' / 'out'
+    celery_dir.mkdir(parents=True, exist_ok=True)
+    
+    broker = os.getenv('CELERY_BROKER_URL', 'filesystem:///app/data/celery')
     celery = Celery(
         'ad_farm',
         broker=broker,
         include=['tasks'],
     )
+    
+    # Configure Celery for filesystem broker
+    celery.conf.update(
+        result_backend='cache+memory://',
+        task_serializer='json',
+        accept_content=['json'],
+        result_serializer='json',
+        timezone='UTC',
+        enable_utc=True,
+        broker_transport_options={
+            'data_folder_in': '/app/data/celery/out',
+            'data_folder_out': '/app/data/celery/out',
+        }
+    )
+    
     period = get_config()['SUBMIT_PERIOD']
     celery.conf.beat_schedule = {
         f'submit_flags': {

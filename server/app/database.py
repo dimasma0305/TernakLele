@@ -3,12 +3,12 @@ Module with SQLite helpers, see http://flask.pocoo.org/docs/0.12/patterns/sqlite
 """
 
 import logging
+import sqlite3
 import threading
 from contextlib import contextmanager
+from pathlib import Path
 
-from psycopg2 import pool, extras
-
-from constants import SCHEMA_PATH, POSTGRES_DSN
+from constants import SCHEMA_PATH, SQLITE_DB_PATH
 
 logger = logging.getLogger(__name__)
 
@@ -19,20 +19,22 @@ class DBPool:
 
     @staticmethod
     def create():
-        p = pool.ThreadedConnectionPool(
-            minconn=5,
-            maxconn=20,
-            dsn=POSTGRES_DSN,
-        )
-        conn = p.getconn()
+        # Ensure the directory exists
+        db_path = Path(SQLITE_DB_PATH)
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Create connection to SQLite database
+        conn = sqlite3.connect(SQLITE_DB_PATH, check_same_thread=False)
+        conn.row_factory = sqlite3.Row  # Enable dict-like access to rows
+        
         logger.info("Initializing db schema")
         try:
-            with conn.cursor() as curs:
-                curs.execute(SCHEMA_PATH.read_text())
-                conn.commit()
+            with conn:
+                conn.executescript(SCHEMA_PATH.read_text())
         finally:
-            p.putconn(conn)
-        return p
+            conn.close()
+        
+        return SQLITE_DB_PATH
 
     @classmethod
     def get(cls):
@@ -44,15 +46,21 @@ class DBPool:
 
 @contextmanager
 def db_cursor(dict_cursor: bool = True):
-    db_pool = DBPool.get()
-    conn = db_pool.getconn()
-
+    # Ensure database is initialized first
+    DBPool.get()
+    
+    # SQLite doesn't need a connection pool like PostgreSQL
+    # We'll create a new connection for each operation
+    conn = sqlite3.connect(SQLITE_DB_PATH, check_same_thread=False)
+    
     if dict_cursor:
-        curs = conn.cursor(cursor_factory=extras.RealDictCursor)
+        conn.row_factory = sqlite3.Row  # Enable dict-like access to rows
     else:
-        curs = conn.cursor()
+        conn.row_factory = None  # Return tuples
+    
+    curs = conn.cursor()
     try:
         yield conn, curs
     finally:
         curs.close()
-        db_pool.putconn(conn)
+        conn.close()

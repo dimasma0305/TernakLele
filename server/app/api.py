@@ -2,10 +2,10 @@ import importlib
 import time
 import hashlib
 import json
+import re
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
 
-import redis.exceptions
 from flask import request, jsonify, Blueprint
 from prometheus_client import Counter, Gauge
 
@@ -15,6 +15,101 @@ from database import db_cursor
 from models import FlagStatus
 
 api = Blueprint('api', __name__, url_prefix='/api')
+
+def parse_time_string(time_str):
+    """
+    Parse various time formats and return Unix timestamp.
+    Supports:
+    - ISO formats: 2024-01-01, 2024-01-01T10:30:00, 2024-01-01 10:30:00
+    - Timezone offsets: +8, +1, +0, -5, +05:30, etc.
+    - Relative times: 1h, 2d, 30m, 1w (hours, days, minutes, weeks ago)
+    - Natural language: yesterday, today, now
+    - Unix timestamp: 1640995200
+    """
+    if not time_str or not time_str.strip():
+        return None
+    
+    time_str = time_str.strip()
+    now = datetime.now()
+    
+    # Try relative time formats first (e.g., "1h", "2d", "30m", "1w")
+    relative_match = re.match(r'^(\d+)([hdmw])$', time_str.lower())
+    if relative_match:
+        value = int(relative_match.group(1))
+        unit = relative_match.group(2)
+        
+        if unit == 'h':  # hours
+            return round((now - timedelta(hours=value)).timestamp())
+        elif unit == 'd':  # days
+            return round((now - timedelta(days=value)).timestamp())
+        elif unit == 'm':  # minutes
+            return round((now - timedelta(minutes=value)).timestamp())
+        elif unit == 'w':  # weeks
+            return round((now - timedelta(weeks=value)).timestamp())
+    
+    # Try natural language
+    if time_str.lower() in ['now', 'today']:
+        return round(now.timestamp())
+    elif time_str.lower() == 'yesterday':
+        return round((now - timedelta(days=1)).timestamp())
+    
+    # Try Unix timestamp (numeric)
+    try:
+        timestamp = float(time_str)
+        if timestamp > 0:
+            return round(timestamp)
+    except ValueError:
+        pass
+    
+    # Try timezone offset formats (e.g., "+8", "+1", "+0", "-5", "+05:30")
+    timezone_match = re.match(r'^([+-]?\d{1,2})(?::(\d{2}))?$', time_str)
+    if timezone_match:
+        hours = int(timezone_match.group(1))
+        minutes = int(timezone_match.group(2) or 0)
+        
+        # Calculate offset in hours
+        offset_hours = hours + (minutes / 60.0)
+        
+        # Apply timezone offset to current time
+        offset_time = now + timedelta(hours=offset_hours)
+        return round(offset_time.timestamp())
+    
+    # Try various datetime formats with timezone support
+    formats = [
+        # ISO formats with timezone
+        '%Y-%m-%d %H:%M:%S%z',     # 2024-01-01 10:30:00+08:00
+        '%Y-%m-%d %H:%M%z',        # 2024-01-01 10:30+08:00
+        '%Y-%m-%dT%H:%M:%S%z',     # 2024-01-01T10:30:00+08:00
+        '%Y-%m-%dT%H:%M%z',        # 2024-01-01T10:30+08:00
+        '%Y-%m-%dT%H:%M:%S.%f%z',  # 2024-01-01T10:30:00.000+08:00
+        '%Y-%m-%dT%H:%M:%SZ',      # 2024-01-01T10:30:00Z
+        '%Y-%m-%dT%H:%M:%S.%fZ',   # 2024-01-01T10:30:00.000Z
+        '%Y-%m-%dT%H:%MZ',         # 2024-01-01T10:30Z
+        # Standard ISO formats
+        '%Y-%m-%d %H:%M:%S',       # 2024-01-01 10:30:00
+        '%Y-%m-%d %H:%M',          # 2024-01-01 10:30
+        '%Y-%m-%d',                # 2024-01-01
+        '%Y-%m-%dT%H:%M:%S',       # 2024-01-01T10:30:00
+        '%Y-%m-%dT%H:%M',          # 2024-01-01T10:30
+        '%Y-%m-%d %H:%M:%S.%f',    # 2024-01-01 10:30:00.000
+        # Alternative date formats
+        '%d/%m/%Y %H:%M:%S',       # 01/01/2024 10:30:00
+        '%d/%m/%Y %H:%M',          # 01/01/2024 10:30
+        '%d/%m/%Y',                # 01/01/2024
+        '%m/%d/%Y %H:%M:%S',       # 01/01/2024 10:30:00
+        '%m/%d/%Y %H:%M',          # 01/01/2024 10:30
+        '%m/%d/%Y',                # 01/01/2024
+    ]
+    
+    for fmt in formats:
+        try:
+            dt = datetime.strptime(time_str, fmt)
+            return round(dt.timestamp())
+        except ValueError:
+            continue
+    
+    # If all parsing attempts fail, raise an error
+    raise ValueError(f"Unable to parse time format: '{time_str}'. Supported formats: ISO dates, timezone offsets (+8, +1, +0, -5, +05:30), relative times (1h, 2d, 30m, 1w), natural language (now, today, yesterday), Unix timestamps")
 
 FLAGS_RECEIVED = Counter(
     'flags_received',
@@ -49,22 +144,21 @@ def post_flags():
         flags = validator_module.validate_flags(flags, config)
 
     rows = [
-        {
-            'flag': flag['flag'],
-            'sploit': flag['sploit'],
-            'team': flag['team'],
-            'time': cur_time,
-            'status': FlagStatus.QUEUED.name,
-        }
+        (
+            flag['flag'],
+            flag['sploit'],
+            flag['team'],
+            cur_time,
+            FlagStatus.QUEUED.name,
+        )
         for flag in flags
     ]
 
     with db_cursor() as (conn, curs):
         curs.executemany(
             """
-            INSERT INTO flags (flag, sploit, team, time, status)
-            VALUES (%(flag)s, %(sploit)s, %(team)s, %(time)s, %(status)s)
-            ON CONFLICT DO NOTHING
+            INSERT OR IGNORE INTO flags (flag, sploit, team, time, status)
+            VALUES (?, ?, ?, ?, ?)
             """,
             rows,
         )
@@ -85,19 +179,23 @@ def get_filtered_flags():
     for column in ['sploit', 'status', 'team']:
         value = filters.get(column)
         if value:
-            conditions.append((f'{column} = %s', value))
+            conditions.append((f'{column} = ?', value))
 
     for column in ['flag', 'checksystem_response']:
         value = filters.get(column)
         if value:
-            conditions.append((f'POSITION(%s in LOWER({column})) > 0', value.lower()))
+            conditions.append((f'INSTR(LOWER({column}), ?) > 0', value.lower()))
 
     for column in ['since', 'until']:
         value = filters.get(column, '').strip()
         if value:
-            timestamp = round(datetime.strptime(value, '%Y-%m-%d %H:%M').timestamp())
-            sign = '>=' if column == 'since' else '<='
-            conditions.append((f'time {sign} %s', timestamp))
+            try:
+                timestamp = parse_time_string(value)
+                if timestamp is not None:
+                    sign = '>=' if column == 'since' else '<='
+                    conditions.append((f'time {sign} ?', timestamp))
+            except ValueError as e:
+                return jsonify({'error': str(e)}), 400
 
     page = int(filters.get('page', 1))
     if page < 1:
@@ -115,7 +213,7 @@ def get_filtered_flags():
         conditions_sql = ''
         conditions_args = []
 
-    sql = 'SELECT * FROM flags ' + conditions_sql + ' ORDER BY time DESC LIMIT %s OFFSET %s'
+    sql = 'SELECT * FROM flags ' + conditions_sql + ' ORDER BY time DESC LIMIT ? OFFSET ?'
     args = conditions_args + [page_size, page_size * (page - 1)]
 
     count_sql = 'SELECT COUNT(*) as cnt FROM flags ' + conditions_sql
@@ -170,27 +268,35 @@ def summary():
     for column in ['sploit', 'status', 'team']:
         value = filters.get(column)
         if value:
-            conditions.append((f'{column} = %s', value))
+            conditions.append((f'{column} = ?', value))
 
     for column in ['flag', 'checksystem_response']:
         value = filters.get(column)
         if value:
-            conditions.append((f'POSITION(%s in LOWER({column})) > 0', value.lower()))
+            conditions.append((f'INSTR(LOWER({column}), ?) > 0', value.lower()))
 
     for column in ['since', 'until']:
         value = filters.get(column, '').strip()
         if value:
-            timestamp = round(datetime.strptime(value, '%Y-%m-%d %H:%M').timestamp())
-            sign = '>=' if column == 'since' else '<='
-            conditions.append((f'time {sign} %s', timestamp))
+            try:
+                timestamp = parse_time_string(value)
+                if timestamp is not None:
+                    sign = '>=' if column == 'since' else '<='
+                    conditions.append((f'time {sign} ?', timestamp))
+            except ValueError as e:
+                return jsonify({'error': str(e)}), 400
 
     # result for last x seconds
     for column in ['last']:
         value = filters.get(column, '').strip()
         if value:
-            timestamp = round(datetime.strptime(datetime.timestamp()-value, '%Y-%m-%d %H:%M').timestamp())
-            sign = '>='
-            conditions.append((f'time {sign} %s', timestamp))
+            try:
+                timestamp = parse_time_string(value)
+                if timestamp is not None:
+                    sign = '>='
+                    conditions.append((f'time {sign} ?', timestamp))
+            except ValueError as e:
+                return jsonify({'error': str(e)}), 400
 
     if conditions:
         chunks, values = list(zip(*conditions))
@@ -325,9 +431,9 @@ def get_content_hash():
     
     with db_cursor(True) as (_, curs):
         # Get hash for flags data
-        curs.execute("SELECT COUNT(*), MAX(time) FROM flags")
+        curs.execute("SELECT COUNT(*) as count, MAX(time) as max_time FROM flags")
         flags_meta = curs.fetchone()
-        flags_hash_data = f"{flags_meta['count']}_{flags_meta['max'] or 0}"
+        flags_hash_data = f"{flags_meta['count']}_{flags_meta['max_time'] or 0}"
         flags_hash = hashlib.md5(flags_hash_data.encode()).hexdigest()
         
         # Get hash for chart data (team status counts)

@@ -40,7 +40,7 @@ def submit_flags_task():
     with db_cursor(True) as (conn, curs):
         curs.execute(
             """
-            UPDATE flags SET status = %s WHERE status = %s AND time < %s
+            UPDATE flags SET status = ? WHERE status = ? AND time < ?
             """,
             (FlagStatus.SKIPPED.name, FlagStatus.QUEUED.name, skip_time),
         )
@@ -48,7 +48,7 @@ def submit_flags_task():
         conn.commit()
         curs.execute(
             """
-            SELECT * FROM flags WHERE status = %s
+            SELECT * FROM flags WHERE status = ?
             """,
             (FlagStatus.QUEUED.name,),
         )
@@ -93,7 +93,7 @@ def submit_flags_task():
         with db_cursor(True) as (conn, curs):
             curs.executemany(
                 """
-                UPDATE flags SET status = %s, checksystem_response = %s WHERE flag = %s
+                UPDATE flags SET status = ?, checksystem_response = ? WHERE flag = ?
                 """,
                 rows,
             )
