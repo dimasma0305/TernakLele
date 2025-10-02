@@ -1,17 +1,16 @@
 FROM node:20-slim AS front-base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@8 --activate
-
 COPY front /app
 WORKDIR /app
 
-FROM front-base AS front-build
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm run build
+FROM front-base as front-build
+RUN npm install
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ARG NODE_ENV
+ENV NODE_ENV=$NODE_ENV
+RUN npm run build
 
-FROM nginx:1.21.0-alpine
-
-COPY ./docker/front/proxy_params /etc/nginx/proxy_params
-COPY ./docker/front/app.conf /etc/nginx/conf.d/default.conf
-COPY --from=front-build /app/dist /front
+FROM front-base
+COPY --from=front-build /app/node_modules ./node_modules
+COPY --from=front-build /app/.next/ ./.next
+CMD ["npm", "run", "start"]

@@ -28,6 +28,12 @@ services:
     build:
       context: ./server
       dockerfile: ./docker/front/Dockerfile
+      args:
+        - NODE_ENV=production
+        - NEXT_PUBLIC_API_URL=http://farm:5000/api
     restart: unless-stopped
     ports:
-      - "5137:80"
+      - "5137:3000"
+    depends_on:
+      - farm
+      - celery
