@@ -6,20 +6,22 @@ CONFIG = {
     'DEBUG': os.getenv('DEBUG') == '1',
 
     'TEAMS': {
-        f'Team #{i}-{2*i - 1:02d}': f'{2*i - 1:02d}'
-        for i in range(1, 16)
+        f'Team #{i}-{2*i - 1:02d}': f'{10 + i:02d}'
+        for i in range(1, 28)
     },
     # 'FLAG_FORMAT': r'CTF\.Moscow\{[a-zA-Z\.0-9_-]+\}',
     # 'FLAG_FORMAT': r'VolgaCTF{[\w-]*\.[\w-]*\.[\w-]*}',
-    'FLAG_FORMAT': r'COMPFEST17{.*?}',
+    'FLAG_FORMAT': r'flag{.*?}',
 
     # 'SYSTEM_PROTOCOL': 'ructf_http',
     # 'SYSTEM_URL': 'http://monitor.ructfe.org/flags',
     # 'SYSTEM_TOKEN': '275_17fc104dd58d429ec11b4a5e82041cd2',
 
-    'SYSTEM_PROTOCOL': 'ailurus',
-    'SYSTEM_URL': 'https://api.ctf-compfest.com',
-    'TEAM_TOKEN': 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1OTAyNDg0MiwianRpIjoiM2U1MmM2ZTAtYzEwYS00OTJhLWFkYTItMTRlODlhMzAwNDBjIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ0ZWFtIjp7ImlkIjo4LCJuYW1lIjoiYXBhIHlhIGthPyJ9fSwibmJmIjoxNzU5MDI0ODQyLCJleHAiOjE3NTkwNjgwNDJ9.N35Yg08RPProq_5CKFTbcDbzLhgq-sk0VCXYhZhTQAM5OuuLADHIXoj_w19GI1emxhD7udCNLGyiXv82zFyfbw',
+    'SYSTEM_PROTOCOL': 'xctf',
+    'SYSTEM_URL': 'http://10.2.65.1',
+    'SYSTEM_TOKEN': 'f330700f0498bdc5a265c716b9f61b0e',
+    'RACE_ID': 'b2a01b4b88df2f76b05bbc1e4e50b2f7',
+
     # 'SYSTEM_HOST': '10.10.10.10',
     # 'SYSTEM_PORT': '31337',
     # 'SYSTEM_PROTOCOL': 'volgactf',

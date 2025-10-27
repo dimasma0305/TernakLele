@@ -9,8 +9,10 @@ services:
     environment:
       CELERY_BROKER_URL: 'filesystem:///app/data/celery'
       SQLITE_DB_PATH: '/app/data/farm.db'
-      SERVER_PASSWORD: ${SERVER_PASSWORD}
+      SERVER_PASSWORD: dimas123
     restart: unless-stopped
+    networks:
+      - app
 
   celery:
     build:
@@ -23,6 +25,8 @@ services:
       CELERY_BROKER_URL: 'filesystem:///app/data/celery'
       SQLITE_DB_PATH: '/app/data/farm.db'
     restart: unless-stopped
+    networks:
+      - app
 
   front:
     build:
@@ -37,3 +41,34 @@ services:
     depends_on:
       - farm
       - celery
+    networks:
+      - traefik
+      - app
+    labels:
+      - "traefik.enable=true"
+      # docker network to use
+      - "traefik.docker.network=traefik"
+
+      # Service ports
+      - "traefik.http.services.ternaklele.loadbalancer.server.port=3000"
+
+      # HTTPS router
+      - "traefik.http.routers.ternaklele.rule=Host(`ternaklele.1pc.tf`)"
+      - "traefik.http.routers.ternaklele.entrypoints=websecure"
+      - "traefik.http.routers.ternaklele.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.ternaklele.service=ternaklele"
+
+      # expose this host server 100.108.112.35 port 3000
+      - "traefik.http.services.tulip.loadbalancer.server.url=http://100.108.112.35:3000"
+      # route
+      - "traefik.http.routers.tulip.rule=Host(`tulip.1pc.tf`)"
+      - "traefik.http.routers.tulip.entrypoints=websecure"
+      - "traefik.http.routers.tulip.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.tulip.service=tulip"
+
+
+
+networks:
+  traefik:
+    external: true
+  app:
